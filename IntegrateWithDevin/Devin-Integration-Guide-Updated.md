@@ -235,7 +235,7 @@ Save the snapshot so every new Devin session starts from this ready state.
 - Because Devin reads repo files, CLAUDE.md, README.md, and everything in
   `docs/` already act as strong built-in guidance.
 
-### Step 7 (optional) — Wire up team integrations
+### Step 7 (optional) — Wire up team integrations 
 
 - **Slack:** install the Devin Slack app; start work with `@Devin <task>`.
 - **Linear / Jira:** connect the workspace; assign a ticket to Devin to have it
