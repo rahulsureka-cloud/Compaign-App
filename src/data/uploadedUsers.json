@@ -1,0 +1,9 @@
+[
+  { "status": "valid", "name": "Diana Prince", "age": 46, "state": "California", "dateOfBirth": "Apr-30-1980" },
+  { "status": "valid", "name": "Bruce Wayne", "age": 53, "state": "New Jersey", "dateOfBirth": "Aug-15-1972" },
+  { "status": "valid", "name": "Barry Allen", "age": 31, "state": "California", "dateOfBirth": "Apr-01-1995" },
+  { "status": "valid", "name": "Clark Kent", "age": 48, "state": "California", "dateOfBirth": "Nov-22-1977" },
+  { "status": "valid", "name": "Steve Rogers", "age": 40, "state": "California", "dateOfBirth": "June-13-1985" },
+  { "status": "valid", "name": "Natasha Romanoff", "age": 38, "state": "New York", "dateOfBirth": "Dec-03-1987" },
+  { "status": "valid", "name": "Tony Stark", "age": 55, "state": "California", "dateOfBirth": "May-29-1970" }
+]

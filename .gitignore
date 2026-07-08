@@ -1,0 +1,12 @@
+# Node / React
+node_modules/
+build/
+.env.local
+npm-debug.log*
+
+# .NET
+bin/
+obj/
+
+# Misc
+.DS_Store
