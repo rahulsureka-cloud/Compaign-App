@@ -23,11 +23,14 @@ async function request(path, options = {}) {
 /* ----------------------------- Campaigns ----------------------------- */
 
 export const campaignApi = {
-  async getAll() {
+  async getAll(status) {
+    const qs = status ? `?status=${encodeURIComponent(status)}` : '';
     try {
-      return await request('/campaigns');
+      return await request(`/campaigns${qs}`);
     } catch {
-      return campaignsSeed;
+      return status
+        ? campaignsSeed.filter((c) => c.status === status)
+        : campaignsSeed;
     }
   },
   async getDashboard() {
@@ -45,6 +48,15 @@ export const campaignApi = {
   },
   remove(id) {
     return request(`/campaigns/${id}`, { method: 'DELETE' });
+  },
+  approve(id) {
+    return request(`/campaigns/${id}/approve`, { method: 'POST' });
+  },
+  reject(id) {
+    return request(`/campaigns/${id}/reject`, { method: 'POST' });
+  },
+  clone(id) {
+    return request(`/campaigns/${id}/clone`, { method: 'POST' });
   },
 };
 

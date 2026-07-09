@@ -3,9 +3,9 @@ import { NavLink } from 'react-router-dom';
 import '../../styles/layout.css';
 
 const marketingLinks = [
+  { to: '/dashboard', label: 'Dashboard' },
   { to: '/campaigns/new', label: 'Create campaign' },
   { to: '/campaigns', label: 'Campaigns' },
-  { to: '/dashboard', label: 'Dashboard' },
   { to: '/user-segment', label: 'User segment' },
 ];
 

@@ -4,7 +4,7 @@ import Sidebar from './components/Layout/Sidebar';
 import Topbar from './components/Layout/Topbar';
 import Dashboard from './components/Dashboard/Dashboard';
 import CampaignList from './components/Campaigns/CampaignList';
-import CampaignForm from './components/Campaigns/CampaignForm';
+import CampaignWizard from './components/Campaigns/CampaignWizard';
 import UserSegmentList from './components/UserSegment/UserSegmentList';
 import AddUserSegment from './components/UserSegment/AddUserSegment';
 import './styles/layout.css';
@@ -20,8 +20,8 @@ export default function App() {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/campaigns" element={<CampaignList />} />
-            <Route path="/campaigns/new" element={<CampaignForm />} />
-            <Route path="/campaigns/:id/edit" element={<CampaignForm />} />
+            <Route path="/campaigns/new" element={<CampaignWizard />} />
+            <Route path="/campaigns/:id/edit" element={<CampaignWizard />} />
             <Route path="/user-segment" element={<UserSegmentList />} />
             <Route path="/user-segment/new" element={<AddUserSegment />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
