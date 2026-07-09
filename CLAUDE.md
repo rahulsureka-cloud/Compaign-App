@@ -13,7 +13,12 @@
 **Marketing Campaign Management Tool** is an Admin-tool feature for users who
 hold the **"Marketing"** entitlement. It lets them:
 
-- **Create, read, update, and delete campaigns** (full CRUD).
+- **Create campaigns via a 4-step wizard** (Setup → Segment → Location →
+  Review), and read/update/clone them. (Delete exists on the API; the UI uses
+  edit/clone.)
+- Run an **approval workflow**: submit a campaign for approval, then
+  **Approve** (→ Active) or **Reject** (→ Draft) from the Campaigns screen's
+  "Awaiting your approval" queue, which also has status tabs.
 - View a **Campaign & Promotion Dashboard** showing how campaigns are
   performing as of today, including:
   - **Total Targeted Population**
@@ -49,10 +54,18 @@ The end result is a working app the user can view at **http://localhost:3000**.
 ```
 Compaign App/
 ├── CLAUDE.md                     # <- you are here (the instructor)
+├── README.md                     # quick start
 ├── .claude/
 │   └── settings.local.json       # local settings (agent teams enabled)
 ├── docs/
-│   └── agent-teams-reference.md  # master reference guide for agent teams
+│   ├── Project Structure.md            # non-technical guide
+│   ├── Project Structure-Technical.md  # technical guide
+│   └── agent-teams-reference.md        # master reference guide for agent teams
+├── Guardrails/
+│   └── Guardrails.md             # living register of all guardrails (GR-###)
+├── DummyData/
+│   └── dummy-users.csv           # sample upload for the Segment step
+├── IntegrateWithDevin/           # Devin integration guides
 ├── package.json                  # React app manifest (scripts, deps)
 ├── public/
 │   └── index.html
@@ -62,20 +75,23 @@ Compaign App/
     ├── setupProxy.js             # Proxies /api -> backend :5000
     ├── components/               # React UI components
     │   ├── Dashboard/
-    │   ├── Campaigns/
+    │   ├── Campaigns/            # CampaignList, CampaignWizard, wizard/ steps
     │   ├── UserSegment/
     │   ├── Layout/
+    │   ├── common/              # ConfirmDialog, etc.
     │   └── __tests__/            # Jest test files
     ├── services/                 # API client helpers (fetch wrappers)
     ├── data/                     # Dummy/seed data (JSON)
     ├── styles/                   # All .css files
-    └── api/                      # .NET Core Web API
-        ├── MarketingApi.csproj
-        ├── Program.cs
-        ├── Controllers/
-        ├── Models/
-        ├── Services/
-        └── Data/                 # Seed data used by the API
+    ├── api/                      # .NET Core Web API
+    │   ├── MarketingApi.csproj
+    │   ├── Program.cs
+    │   ├── Controllers/
+    │   ├── Models/
+    │   ├── Services/
+    │   ├── Validation/          # CampaignValidator (guardrails GR-001/GR-002)
+    │   └── Data/                 # Seed data used by the API
+    └── api.Tests/                # xUnit backend tests
 ```
 
 If you add a new area, extend this tree and keep folders grouped by feature.
@@ -119,21 +135,62 @@ components. If you change a field, change it in **all** three places plus tests.
 
 **Campaign**
 
+The create-campaign flow is a 4-step wizard (Setup → Segment → Location →
+Review). The Campaign shape below spans all steps plus the dashboard metrics and
+the approval workflow. (Note: the `assets` field remains in the model/seed data
+but is no longer collected in the wizard UI — the Content step was removed.)
+
 ```jsonc
 {
   "id": "string (guid)",
+  // --- Step 1: Setup ---
   "name": "string",
   "description": "string",
-  "channel": "Email | SMS | Push | Web",
-  "status": "Draft | Active | Paused | Completed",
+  "keywords": "string (comma-separated, optional)",
+  "productCategory": "string (optional) e.g. Savings | Checking | Credit Card | Auto Loan | Mortgage",
+  "priority": "High | Medium | Low (optional)",
   "startDate": "ISO date",
   "endDate": "ISO date",
-  "targetedPopulation": 12500,      // Total Targeted Population
+  "channels": ["In-app", "Email", "SMS", "Social media", "Ads"], // multi-select
+  // --- Step 2: Content (marketing assets) ---
+  "assets": [
+    {
+      "type": "Image | Text | HTML",
+      "fileName": "string | null",   // Image/HTML upload name
+      "tagOption": "string | null",  // Image tag option
+      "altText": "string | null",    // Image alt text
+      "ctaLink": "string | null",    // optional CTA link
+      "text": "string | null",       // Text asset body
+      "html": "string | null"        // HTML asset body
+    }
+  ],
+  // --- Step 3: Segment ---
+  "segmentIds": ["guid"],            // selected existing user segments
+  "manualUploadName": "string | null", // uploaded CSV/XLS/XLSX file name
+  "estimatedReach": 25329,           // Audience summary estimate
+  // --- Step 4: Location ---
+  "webLocations": ["Accounts-top banner", "Accounts-bottom banner", ...],
+  "mobileLocations": ["Accounts-top banner", ...],
+  // --- Status + dashboard metrics ---
+  "status": "Draft | In-progress | Under approval | Active | Completed",
+  "targetedPopulation": 12500,       // Total Targeted Population
   "accepted": 4200,                  // accepted / fulfilled
   "declined": 3100,                  // declined
   "clickedUnfinished": 1800          // clicked but did not finish
 }
 ```
+
+**Approval workflow / statuses**
+
+- `Draft` — saved but not submitted. `In-progress` — being built / journey defined.
+- `Under approval` — submitted via **Send for approval**; appears in the
+  Campaigns screen's **"Awaiting your approval"** queue.
+- Approver actions: **Approve** → status becomes `Active`; **Reject** → back to
+  `Draft`.
+- **Clone** copies an existing campaign into a new `Draft`.
+- Endpoints: `GET /api/campaigns?status=Active`,
+  `POST /api/campaigns/{id}/approve`, `POST /api/campaigns/{id}/reject`,
+  `POST /api/campaigns/{id}/clone`.
 
 **UserSegment**
 
@@ -192,6 +249,13 @@ functionality, follow this checklist so nothing breaks:
 5. **Run tests** (§5) and the app (§4); verify the change actually works.
 6. **Update this CLAUDE.md** when you add a new feature area, route, or data
    field, so the instructor stays accurate.
+
+### Guardrails
+
+Validation, safe-action, and state-transition controls are tracked in
+**`Guardrails/Guardrails.md`** — the living register for the whole project.
+When you add or change a guardrail, implement it, cite its `GR-###` id in code
+comments, and update that document (register row + detail entry + change log).
 
 ### Common change recipes
 

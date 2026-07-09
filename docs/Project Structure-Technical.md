@@ -42,7 +42,7 @@ test suites and integrates. Details in `agent-teams-reference.md` §9.
 | --- | --- | --- |
 | Node.js | **22.19.0** | Runs the React dev server and test runner |
 | npm | **10.9.3** | Frontend package manager & scripts |
-| .NET SDK | **10.0.109** | Builds and runs the Web API |
+| .NET SDK | **10.0.301** (also 10.0.109 installed) | Builds and runs the Web API |
 | Target framework | **net10.0** | Compilation target for the API & tests |
 
 ### Frontend stack
@@ -54,6 +54,7 @@ test suites and integrates. Details in `agent-teams-reference.md` §9.
 | react-router-dom | ^6.26.2 | Client-side routing between screens |
 | react-scripts (Create React App) | 5.0.1 | Build/dev-server/test tooling (webpack, Babel, Jest) |
 | http-proxy-middleware | ^2.0.6 | Proxies `/api` calls to the backend in dev |
+| xlsx (SheetJS) | ^0.18.5 | Parses uploaded CSV/XLS/XLSX lists to count users (Segment step) |
 | @testing-library/react | ^16.0.1 | Component testing |
 | @testing-library/jest-dom | ^6.4.8 | Extra DOM matchers for tests |
 | @testing-library/user-event | ^14.5.2 | Simulating user interactions in tests |
@@ -94,6 +95,12 @@ Compaign App/
 │   ├── Project Structure-Technical.md  # This document
 │   └── agent-teams-reference.md        # Master guide for agent teams
 │
+├── Guardrails/
+│   └── Guardrails.md             # Living register of all guardrails (GR-###)
+│
+├── DummyData/
+│   └── dummy-users.csv           # Sample list to upload in the Segment step
+│
 ├── public/
 │   └── index.html                # HTML shell that hosts the React app
 │
@@ -105,16 +112,27 @@ Compaign App/
     │
     ├── components/               # ── FRONTEND UI ──
     │   ├── Layout/
-    │   │   ├── Sidebar.js         #   Left navigation menu
+    │   │   ├── Sidebar.js         #   Left nav (Dashboard first, then Create/Campaigns/User segment)
     │   │   └── Topbar.js          #   Breadcrumb + title bar
     │   ├── Dashboard/
-    │   │   └── Dashboard.js       #   Performance metrics & table
+    │   │   └── Dashboard.js       #   Performance metrics & table + decision bars
     │   ├── Campaigns/
-    │   │   ├── CampaignList.js    #   List + delete
-    │   │   └── CampaignForm.js    #   Create / edit form
+    │   │   ├── CampaignList.js       #   Approval queue + status tabs + clone/edit
+    │   │   ├── CampaignWizard.js     #   4-step create/edit wizard (orchestrator)
+    │   │   ├── campaignOptions.js    #   Shared option lists + empty-campaign factory
+    │   │   └── wizard/
+    │   │       ├── WizardProgress.js     #   Step tracker (Setup→Segment→Location→Review)
+    │   │       ├── StepSetup.js          #   Step 1: details + multi-select channels
+    │   │       ├── StepSegment.js        #   Step 2: pick segments + audience summary
+    │   │       ├── StepLocation.js       #   Step 3: web/mobile placements
+    │   │       ├── StepReview.js         #   Step 4: summary + edit jumps
+    │   │       ├── SegmentPickerModal.js #   "Select user segment" popup
+    │   │       └── parseUpload.js         #   Counts users in an uploaded CSV/XLS/XLSX (SheetJS)
     │   ├── UserSegment/
     │   │   ├── UserSegmentList.js #   Segment list
     │   │   └── AddUserSegment.js  #   Build segment + upload list
+    │   ├── common/
+    │   │   └── ConfirmDialog.js   #   Reusable yes/no confirmation modal
     │   └── __tests__/             #   Jest component tests
     │
     ├── services/
@@ -126,10 +144,11 @@ Compaign App/
     │   └── uploadedUsers.json
     │
     ├── styles/                   # ── CSS ──
-    │   ├── global.css            #   Tokens, buttons, tables, badges
+    │   ├── global.css            #   Tokens, buttons, tables, badges, form fields, confirm dialog
     │   ├── layout.css            #   Shell, sidebar, topbar
     │   ├── dashboard.css
-    │   ├── campaigns.css
+    │   ├── campaigns.css         #   List, status tabs, approve/reject/clone actions
+    │   ├── wizard.css            #   Wizard steps, channel cards, segment modal
     │   └── segments.css
     │
     ├── api/                      # ── BACKEND (.NET Core Web API) ──
@@ -145,12 +164,15 @@ Compaign App/
     │   │   ├── Campaign.cs
     │   │   ├── UserSegment.cs
     │   │   └── DashboardSummary.cs
+    │   ├── Validation/
+    │   │   └── CampaignValidator.cs   #   Guardrails GR-001/GR-002 (date + numeric rules)
     │   └── Data/
     │       └── SeedData.cs        #   Initial in-memory data (mirrors src/data)
     │
     └── api.Tests/                # ── BACKEND TESTS (xUnit) ──
         ├── MarketingApi.Tests.csproj
         ├── CampaignServiceTests.cs
+        ├── CampaignValidatorTests.cs
         └── SegmentServiceTests.cs
 ```
 
@@ -229,11 +251,15 @@ the bundled `src/data/*.json` so read-only screens still render.)*
 | Method | Route | Purpose |
 | --- | --- | --- |
 | GET | `/api/campaigns` | List all campaigns |
+| GET | `/api/campaigns?status={status}` | List campaigns filtered by status (Active, Draft, Under approval, …) |
 | GET | `/api/campaigns/dashboard` | Aggregated dashboard metrics |
 | GET | `/api/campaigns/{id}` | One campaign |
-| POST | `/api/campaigns` | Create |
-| PUT | `/api/campaigns/{id}` | Update |
+| POST | `/api/campaigns` | Create (validated GR-001/GR-002 → 400; fills non-zero dummy metrics) |
+| PUT | `/api/campaigns/{id}` | Update (validated GR-001/GR-002 → 400) |
 | DELETE | `/api/campaigns/{id}` | Delete |
+| POST | `/api/campaigns/{id}/approve` | Approve → `Active` (GR-003: 409 unless currently `Under approval`) |
+| POST | `/api/campaigns/{id}/reject` | Reject → `Draft` (GR-003: 409 unless currently `Under approval`) |
+| POST | `/api/campaigns/{id}/clone` | Clone into a new `Draft` (fresh non-zero metrics) |
 | GET | `/api/segments` | List segments |
 | POST | `/api/segments` | Create (server estimates reach) |
 | PUT | `/api/segments/{id}` | Update |
@@ -257,9 +283,13 @@ the bundled `src/data/*.json` so read-only screens still render.)*
    - [Dashboard.js](../src/components/Dashboard/Dashboard.js) → `getDashboard()`
      → renders stat cards + performance table + decision bars.
    - [CampaignList.js](../src/components/Campaigns/CampaignList.js) →
-     `getAll()` / `remove()`.
-   - [CampaignForm.js](../src/components/Campaigns/CampaignForm.js) →
-     `create()` / `update()` (shared for both new and edit via the `:id` route).
+     `getAll()` / `approve()` / `reject()` / `clone()`. Renders the
+     **"Awaiting your approval"** queue and the status-tab table; Approve/Reject
+     open a [ConfirmDialog](../src/components/common/ConfirmDialog.js) first.
+   - [CampaignWizard.js](../src/components/Campaigns/CampaignWizard.js) →
+     the 4-step create/edit wizard (`create()` / `update()`), shared for both new
+     and edit via the `:id` route. Delegates to the step components under
+     `Campaigns/wizard/` and loads segments via `segmentApi.getAll()`.
    - [UserSegmentList.js](../src/components/UserSegment/UserSegmentList.js) →
      `getAll()` / `remove()`.
    - [AddUserSegment.js](../src/components/UserSegment/AddUserSegment.js) →
@@ -267,6 +297,45 @@ the bundled `src/data/*.json` so read-only screens still render.)*
 6. **Proxy** — in development, [setupProxy.js](../src/setupProxy.js) forwards any
    `/api/*` request from port 3000 to the backend on port 5000, so the two run
    independently without CORS friction in the browser.
+
+### Key feature flows
+
+- **Create/edit wizard (4 steps):** `Setup → Segment → Location → Review`.
+  Setup captures name/description/keywords/product/priority/dates and
+  multi-select **channels**; Segment picks user segments (modal) + optional list
+  upload with a live audience estimate; Location sets web/mobile placements;
+  Review summarises everything with per-section edit jumps and a **Send for
+  approval** action (saves with status `Under approval`). *(The earlier "Content"
+  step was removed; the `assets` field remains in the model/seed only.)*
+- **Approval workflow:** campaigns move `Draft`/`In-progress` → `Under approval`
+  (via Send for approval) → `Active` (Approve) or back to `Draft` (Reject). The
+  Campaigns screen shows an approval queue plus tabs for every status.
+- **Dummy metrics guarantee:** `CampaignService.EnsureMetrics()` fills any zero
+  `targetedPopulation`/`accepted`/`declined`/`clickedUnfinished` on Create and
+  Clone, so every campaign always has non-zero numbers and a colored dashboard
+  bar.
+- **Manual list upload (Segment step):** `Select a file` reads the chosen
+  CSV/XLS/XLSX with SheetJS ([parseUpload.js](../src/components/Campaigns/wizard/parseUpload.js)),
+  counts the data rows, and shows that as **"Manual upload users"** (feeding the
+  estimated reach). Re-uploading replaces the previous list. A ready-to-use
+  sample lives in [DummyData/dummy-users.csv](../DummyData/dummy-users.csv).
+
+### Guardrails
+
+Validation, safe-action, and state-transition controls are catalogued in
+**[Guardrails/Guardrails.md](../Guardrails/Guardrails.md)** (the living register),
+each cited as `GR-###` in code:
+
+- **GR-001 / GR-002 (API):** `CampaignValidator` rejects bad dates
+  (end < start / unparseable) and out-of-range metrics (negative, or
+  accepted+declined+clicked > targetedPopulation) with **HTTP 400** on
+  create/update.
+- **GR-003 (Service+API):** approve/reject only succeed from `Under approval`
+  (else **HTTP 409**); missing id → **404**.
+- **GR-004 (UI):** the wizard disables **Next** / **Send for approval** until the
+  Setup step is valid (name, dates with end ≥ start, ≥1 channel).
+- **GR-005 (UI):** an in-flight-action `busy` guard disables
+  Approve/Reject/Clone and the confirm dialog to prevent double-submits.
 
 ### The data contract (keeps both layers aligned)
 
@@ -304,10 +373,10 @@ When it prints **`Compiled successfully!`**, open **http://localhost:3000**.
 ### Run the tests
 
 ```powershell
-# Frontend (Jest + React Testing Library) — 6 tests
+# Frontend (Jest + React Testing Library) — 16 tests across 5 suites
 npm run test:ci
 
-# Backend (xUnit) — 12 tests
+# Backend (xUnit) — 27 tests
 dotnet test "src\api.Tests\MarketingApi.Tests.csproj"
 ```
 

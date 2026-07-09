@@ -1,8 +1,8 @@
 # Marketing Campaign Management Tool
 
-Admin-tool feature (for users with the **Marketing** entitlement) to create,
-read, update, and delete campaigns, view a Campaign & Promotion dashboard, and
-manage user segments.
+Admin-tool feature (for users with the **Marketing** entitlement) to create
+campaigns via a guided wizard, review/edit/clone them, run an approval workflow,
+view a Campaign & Promotion dashboard, and manage user segments.
 
 - **Frontend:** React.js (`src/components/`) — runs at **http://localhost:3000**
 - **Backend:** .NET Core Web API (`src/api/`) — runs at **http://localhost:5000**
@@ -49,8 +49,26 @@ dotnet test src/api.Tests/MarketingApi.Tests.csproj
 
 - **Dashboard** — Total Targeted Population and per-decision breakdown
   (Accepted/Fulfilled, Declined, Clicked but Unfinished) with a per-campaign
-  performance table.
-- **Campaigns** — full CRUD (list, create, edit, delete).
+  performance table. Every campaign carries non-zero dummy metrics.
+- **Create campaign** — a 4-step wizard: **Setup → Segment → Location → Review**
+  (multi-select channels, segment picker, placements, summary → *Send for
+  approval*). The Segment step can **upload a user list** (CSV/XLS/XLSX) and
+  shows the real parsed user count — a ready sample lives in
+  [DummyData/dummy-users.csv](DummyData/dummy-users.csv).
+- **Campaigns** — an **"Awaiting your approval"** queue with **Approve/Reject**
+  (with a confirmation dialog), **status tabs** (In-progress, Under approval,
+  Draft, Active, Completed), plus **Edit** and **Clone** actions.
 - **User segment** — import a custom user list, review uploaded users, build a
   segment from criteria rules (e.g. `Age > 25 AND State is CA`) with AND/OR
   match logic and an estimated audience reach.
+
+> REST API also exposes create/read/update/delete plus
+> `approve`, `reject`, and `clone`; see
+> [docs/Project Structure-Technical.md](docs/Project%20Structure-Technical.md) §4.
+
+## Guardrails
+
+Validation and safe-action controls (date sanity, numeric ranges, the approval
+state machine, wizard field-validity gating, and double-submit prevention) are
+catalogued in **[Guardrails/Guardrails.md](Guardrails/Guardrails.md)** — the
+living register for the project.

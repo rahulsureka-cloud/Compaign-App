@@ -259,7 +259,7 @@ Devin spins up its VM from your saved snapshot (Node 22 + .NET 10, deps installe
         ▼
 Devin PLANS the change across the full stack:
    Campaign model → SeedData → campaigns.json → API DTO/controller
-   → services/api.js → CampaignForm/CampaignList/Dashboard → tests
+   → services/api.js → CampaignWizard/CampaignList/Dashboard → tests
         │
         ▼
 Devin WRITES the code, then RUNS:  npm run test:ci  +  dotnet test
@@ -286,8 +286,8 @@ Devin lands the change in one pass.
 
 ## 6. Verification & review
 
-- **Automated:** Devin runs `npm run test:ci` (6 Jest tests) and
-  `dotnet test` (12 xUnit tests) inside its VM before opening the PR.
+- **Automated:** Devin runs `npm run test:ci` (16 Jest tests) and
+  `dotnet test` (27 xUnit tests) inside its VM before opening the PR.
 - **Human:** review the PR diff; optionally enable **Devin Review** to get an
   AI review comment automatically.
 - **Local sanity check (optional):** pull the branch and run the app yourself —

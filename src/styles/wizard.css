@@ -1,0 +1,173 @@
+/* ---------- Wizard shell ---------- */
+.wizard-page { max-width: 900px; }
+.wizard-panel { padding: 24px 28px; }
+.wizard-body h2 { margin-top: 0; }
+
+/* Progress tracker */
+.wizard-progress {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 8px 4px;
+}
+.wp-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: default;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.wp-step.done { cursor: pointer; color: var(--topbar); }
+.wp-step.active { color: var(--topbar); font-weight: 700; }
+.wp-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #cfd8dc;
+  color: #fff;
+  font-weight: 700;
+}
+.wp-step.active .wp-circle,
+.wp-step.done .wp-circle { background: var(--topbar); }
+.wp-line { flex: 1; height: 2px; background: #cfd8dc; margin: 0 8px; margin-bottom: 22px; }
+.wp-line.done { background: var(--topbar); }
+
+.wizard-hint {
+  color: var(--declined);
+  font-size: 13px;
+  margin: 0 0 4px;
+  text-align: right;
+}
+
+/* Footer nav */
+.wizard-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0 24px;
+}
+.footer-right { display: flex; gap: 12px; }
+
+/* ---------- Step 1: Setup ---------- */
+.opt { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.channel-block { margin-top: 12px; }
+.channel-title { font-weight: 600; margin-bottom: 10px; }
+.channel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+}
+.channel-card {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 10px;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.channel-card.selected { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+.channel-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.channel-card.selected .channel-check { background: var(--primary); border-color: var(--primary); }
+.channel-icon { font-size: 26px; }
+.channel-name { font-size: 13px; }
+
+/* ---------- Step 2: Content ---------- */
+.content-header, .criteria-header { display: flex; justify-content: space-between; align-items: center; }
+.help-link { color: var(--primary); font-size: 13px; }
+.content-toolbar { display: flex; gap: 12px; margin: 14px 0; }
+.asset-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+.asset-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.asset-types { display: flex; gap: 24px; margin-bottom: 12px; }
+.asset-types label { display: flex; align-items: center; gap: 6px; }
+.rich-text { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-family: inherit; margin-top: 8px; }
+
+/* ---------- Step 3: Segment ---------- */
+.chip-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0; }
+.chip-label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  border-radius: 16px;
+  padding: 4px 10px;
+  font-size: 13px;
+  background: #fff;
+}
+.chip button { background: none; border: none; color: var(--primary); cursor: pointer; font-size: 12px; }
+.segment-columns { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+.segment-select-card, .audience-card, .location-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+}
+.upload-block { margin-top: 16px; }
+.upload-label { font-weight: 600; margin-bottom: 4px; }
+.audience-line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border); }
+.audience-line.total { border-bottom: none; font-size: 16px; }
+.audience-line.total strong { color: var(--primary); }
+
+/* ---------- Step 4: Location ---------- */
+.location-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.location-options { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.checkbox-row { display: flex; align-items: center; gap: 8px; }
+
+/* ---------- Step 5: Review ---------- */
+.summary-section { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; }
+.summary-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.summary-head h3 { margin: 0; font-size: 15px; }
+.summary-body { padding: 12px 16px; }
+.summary-row { display: flex; padding: 6px 0; }
+.summary-label { width: 160px; color: var(--text-muted); }
+.summary-value { flex: 1; }
+
+/* ---------- Modal ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.modal {
+  background: #fff;
+  border-radius: 10px;
+  width: min(760px, 92vw);
+  max-height: 88vh;
+  overflow: auto;
+  padding: 20px 24px;
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; }
+.modal-header h3 { margin: 0; }
+.modal-search { display: flex; gap: 10px; margin: 14px 0; }
+.modal-search input { flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px; }
+.link-text { color: var(--primary); }
