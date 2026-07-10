@@ -54,6 +54,7 @@ export default function SegmentPickerModal({ segments, initialSelected, onAdd, o
           <thead>
             <tr>
               <th>User segment name</th>
+              <th>Description</th>
               <th className="num">Total users</th>
               <th>Segment criteria</th>
               <th>Actions</th>
@@ -63,6 +64,7 @@ export default function SegmentPickerModal({ segments, initialSelected, onAdd, o
             {visible.map((s) => (
               <tr key={s.id}>
                 <td className="cell-title link-text">{s.name}</td>
+                <td>{s.description}</td>
                 <td className="num">{s.estimatedReach.toLocaleString()}</td>
                 <td className="rules-cell">{describeRules(s)}</td>
                 <td>

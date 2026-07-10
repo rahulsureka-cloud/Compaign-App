@@ -125,14 +125,16 @@ Compaign App/
     │   │   └── wizard/
     │   │       ├── WizardProgress.js     #   Step tracker (Setup→Segment→Location→Review)
     │   │       ├── StepSetup.js          #   Step 1: details + multi-select channels
-    │   │       ├── StepSegment.js        #   Step 2: pick segments + audience summary (uses common/FileUpload)
+    │   │       ├── StepSegment.js        #   Step 2: pick segments + audience summary (uses common/FileUpload); opens CreateSegmentModal for inline create
     │   │       ├── StepLocation.js       #   Step 3: web/mobile placements
     │   │       ├── StepReview.js         #   Step 4: summary + edit jumps
     │   │       └── SegmentPickerModal.js #   "Select user segment" popup (uses UserSegment/segmentOptions)
     │   ├── UserSegment/
     │   │   ├── UserSegmentList.js    #   Segment list
-    │   │   ├── AddUserSegment.js     #   Build segment + upload list (uses common/FileUpload)
-    │   │   └── segmentOptions.js     #   Shared segment option lists (CRITERIA/OPERATORS/MATCH_LOGIC) + describeRules
+    │   │   ├── AddUserSegment.js     #   Build segment + upload list (reuses SegmentDefinitionForm + common/FileUpload)
+    │   │   ├── SegmentDefinitionForm.js #  Shared controlled form (name/description/base/criteria/reach) used by page + modal
+    │   │   ├── CreateSegmentModal.js #   In-wizard "Create new segment" modal wrapping SegmentDefinitionForm
+    │   │   └── segmentOptions.js     #   Shared segment option lists (CRITERIA/OPERATORS/MATCH_LOGIC) + describeRules + form helpers
     │   ├── common/
     │   │   ├── ConfirmDialog.js   #   Reusable yes/no confirmation modal
     │   │   ├── FileUpload.js      #   Reusable CSV/XLS/XLSX picker (shared by wizard Segment step + AddUserSegment)
@@ -316,14 +318,30 @@ the bundled `src/data/*.json` so read-only screens still render.)*
      builds rules + `create()`; also previews `uploadedUsers.json`. Its
      base-segment dropdown loads the real segments via `segmentApi.getAll()`
      (rather than hardcoded options).
+   - **Create a segment inline from the wizard** — the Segment step
+     ([StepSegment.js](../src/components/Campaigns/wizard/StepSegment.js)) has a
+     "Create new segment" button that opens
+     [CreateSegmentModal.js](../src/components/UserSegment/CreateSegmentModal.js),
+     which reuses the shared
+     [SegmentDefinitionForm.js](../src/components/UserSegment/SegmentDefinitionForm.js).
+     On save the segment is created via `segmentApi.create()`, added to the
+     wizard's segment list (`CampaignWizard.js`), and auto-selected into the
+     campaign so its reach flows into the audience summary — all without leaving
+     the wizard.
 7. **Shared frontend modules** — the User Segment screens and the campaign
    wizard's Segment step now share code so the audience/upload experience stays
    consistent:
    - [UserSegment/segmentOptions.js](../src/components/UserSegment/segmentOptions.js)
      is the single source of truth for the segment option lists (`CRITERIA`,
-     `OPERATORS`, `MATCH_LOGIC`, `newRule`) and the `describeRules` formatter —
-     imported by `AddUserSegment`, `UserSegmentList`, and the wizard's
+     `OPERATORS`, `MATCH_LOGIC`, `newRule`), the `describeRules` formatter, and the
+     shared form helpers (`emptySegmentForm`, `validateSegmentForm`,
+     `buildSegmentPayload`) — imported by `AddUserSegment`, `UserSegmentList`,
+     `SegmentDefinitionForm`/`CreateSegmentModal`, and the wizard's
      `SegmentPickerModal`.
+   - [UserSegment/SegmentDefinitionForm.js](../src/components/UserSegment/SegmentDefinitionForm.js)
+     is the shared controlled segment form (name, description, base segment,
+     criteria rules, optional reach) reused by both `AddUserSegment` (the page)
+     and `CreateSegmentModal` (the in-wizard popup).
    - [common/FileUpload.js](../src/components/common/FileUpload.js) is a reusable
      CSV/XLS/XLSX picker (parses the real user-row count) used by both the
      wizard's `StepSegment` and `AddUserSegment`.
@@ -432,7 +450,7 @@ When it prints **`Compiled successfully!`**, open **http://localhost:3000**.
 ### Run the tests
 
 ```powershell
-# Frontend (Jest + React Testing Library) — 28 tests across 7 suites
+# Frontend (Jest + React Testing Library) — 31 tests across 8 suites
 npm run test:ci
 
 # Backend (xUnit) — 27 tests

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import SegmentPickerModal from './SegmentPickerModal';
+import CreateSegmentModal from '../../UserSegment/CreateSegmentModal';
 import FileUpload from '../../common/FileUpload';
 import { combineAudienceReach } from '../../UserSegment/segmentOptions';
 import '../../../styles/wizard.css';
 
-export default function StepSegment({ form, patch, segments }) {
+export default function StepSegment({ form, patch, segments, onSegmentCreated }) {
   const [showModal, setShowModal] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
 
   const selectedSegments = segments.filter((s) => form.segmentIds.includes(s.id));
   const existingUsers = selectedSegments.reduce((sum, s) => sum + (s.estimatedReach || 0), 0);
@@ -43,6 +45,14 @@ export default function StepSegment({ form, patch, segments }) {
     recalc(form.segmentIds, 0);
   };
 
+  const handleSegmentCreated = (seg) => {
+    onSegmentCreated?.(seg);
+    const ids = [...form.segmentIds, seg.id];
+    const reaches = selectedSegments.map((s) => s.estimatedReach).concat(seg.estimatedReach);
+    patch({ segmentIds: ids, estimatedReach: combineAudienceReach({ segmentReaches: reaches, manualUsers }) });
+    setShowCreate(false);
+  };
+
   return (
     <div className="wizard-body">
       <h2>User segment</h2>
@@ -70,6 +80,9 @@ export default function StepSegment({ form, patch, segments }) {
           <h3>Select user segment</h3>
           <button type="button" className="link-btn" onClick={() => setShowModal(true)}>
             ⊕ Add existing user segment
+          </button>
+          <button type="button" className="link-btn" onClick={() => setShowCreate(true)}>
+            ⊕ Create new segment
           </button>
 
           <div className="upload-block">
@@ -107,6 +120,14 @@ export default function StepSegment({ form, patch, segments }) {
           initialSelected={form.segmentIds}
           onAdd={applySelection}
           onClose={() => setShowModal(false)}
+        />
+      )}
+
+      {showCreate && (
+        <CreateSegmentModal
+          baseSegments={segments}
+          onCreated={handleSegmentCreated}
+          onClose={() => setShowCreate(false)}
         />
       )}
     </div>

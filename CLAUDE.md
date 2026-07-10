@@ -42,7 +42,10 @@ Once signed in, the tool lets the user:
 - Manage **User Segments** under the Marketing sub-menu: build a segment with a
   name, optional description, an optional base segment, and one or more
   **segment criteria rules** (e.g. `Age > 25 AND State is CA`) joined by
-  AND/OR match logic.
+  AND/OR match logic. A segment can also be created **inline from the campaign
+  wizard's Segment step** via a **"Create new segment" modal** (no need to leave
+  the wizard); on save the new segment is auto-selected into the campaign and its
+  reach flows into the audience summary.
 
 The end result is a working app the user can view at **http://localhost:3000**.
 
@@ -92,7 +95,7 @@ Compaign App/
     │   ├── Login/                # Login page (split brand + sign-in)
     │   ├── Dashboard/
     │   ├── Campaigns/            # CampaignList, CampaignWizard, wizard/ steps
-    │   ├── UserSegment/          # UserSegmentList, AddUserSegment, segmentOptions.js (shared option lists + describeRules)
+    │   ├── UserSegment/          # UserSegmentList, AddUserSegment, SegmentDefinitionForm.js (shared controlled form), CreateSegmentModal.js (in-wizard create), segmentOptions.js (shared option lists + describeRules)
     │   ├── Layout/
     │   ├── common/              # ConfirmDialog, FileUpload, parseUpload (shared, reused by wizard + segments)
     │   └── __tests__/            # Jest test files

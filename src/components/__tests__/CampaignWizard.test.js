@@ -9,6 +9,7 @@ jest.mock('../../services/api');
 
 beforeEach(() => {
   segmentApi.getAll.mockResolvedValue([]);
+  segmentApi.create.mockResolvedValue({ id: 'seg-new' });
   campaignApi.getAll.mockResolvedValue([]);
   campaignApi.create.mockResolvedValue({ id: 'new' });
 });
@@ -58,4 +59,30 @@ test('walks through all steps (no Content step) and sends for approval', async (
   await userEvent.click(screen.getByRole('button', { name: 'Send for approval' }));
   expect(campaignApi.create).toHaveBeenCalledTimes(1);
   expect(campaignApi.create.mock.calls[0][0].status).toBe('Under approval');
+});
+
+test('creates a new segment from inside the wizard and auto-selects it', async () => {
+  segmentApi.create.mockResolvedValue({
+    id: 'seg-new',
+    name: 'Wizard Seg',
+    description: '',
+    matchLogic: 'AND',
+    rules: [],
+    estimatedReach: 45000,
+  });
+
+  render(<MemoryRouter><CampaignWizard /></MemoryRouter>);
+
+  fillSetup();
+  await userEvent.click(screen.getByRole('button', { name: 'Next' })); // -> Segment
+  expect(screen.getByText('Audience summary')).toBeInTheDocument();
+
+  await userEvent.click(screen.getByRole('button', { name: '⊕ Create new segment' }));
+  fireEvent.change(screen.getByPlaceholderText('User segment name'), { target: { value: 'Wizard Seg' } });
+  fireEvent.change(screen.getByPlaceholderText('e.g. 25'), { target: { value: '25' } });
+
+  await userEvent.click(screen.getByRole('button', { name: 'Save segment' }));
+
+  expect(segmentApi.create).toHaveBeenCalledTimes(1);
+  expect(await screen.findByText('Wizard Seg')).toBeInTheDocument();
 });

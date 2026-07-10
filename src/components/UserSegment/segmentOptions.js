@@ -48,3 +48,30 @@ export function combineAudienceReach({ segmentReaches = [], manualUsers = 0 }) {
   const total = segmentReaches.reduce((sum, n) => sum + (n || 0), 0) + manualUsers;
   return Math.round(total * AUDIENCE_DEDUP_FACTOR);
 }
+
+// --- Segment definition form helpers (shared by the page and the create modal) ---
+export const emptySegmentForm = () => ({
+  name: '',
+  description: '',
+  baseSegmentId: '',
+  matchLogic: 'AND',
+  rules: [newRule()],
+});
+
+export function validateSegmentForm(v) {
+  if (!v.name.trim()) return 'User segment name is required.';
+  if (!v.rules || v.rules.length === 0) return 'Add at least one rule.';
+  if (v.rules.some((r) => r.value.toString().trim() === '')) return 'Every rule needs a value.';
+  return '';
+}
+
+export function buildSegmentPayload(v) {
+  return {
+    name: v.name.trim(),
+    description: v.description.trim() || null,
+    baseSegmentId: v.baseSegmentId || null,
+    matchLogic: v.matchLogic,
+    rules: v.rules,
+    estimatedReach: estimateSegmentReach({ rules: v.rules, matchLogic: v.matchLogic }),
+  };
+}

@@ -21,6 +21,7 @@ export default function CampaignWizard() {
   const [saving, setSaving] = useState(false);
 
   const patch = (changes) => setForm((prev) => ({ ...prev, ...changes }));
+  const addSegment = (seg) => setSegments((prev) => [...prev, seg]);
 
   // GR-004: required Setup fields must be valid before leaving step 1 / submitting.
   const datesValid = form.startDate && form.endDate && form.endDate >= form.startDate;
@@ -76,7 +77,7 @@ export default function CampaignWizard() {
         {error && <div className="error-banner">{error}</div>}
 
         {step === 1 && <StepSetup form={form} patch={patch} />}
-        {step === 2 && <StepSegment form={form} patch={patch} segments={segments} />}
+        {step === 2 && <StepSegment form={form} patch={patch} segments={segments} onSegmentCreated={addSegment} />}
         {step === 3 && <StepLocation form={form} patch={patch} />}
         {step === 4 && <StepReview form={form} segments={segments} onEdit={setStep} />}
       </div>

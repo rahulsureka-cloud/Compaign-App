@@ -137,6 +137,11 @@ Review**. Use **Next** / **Back** to move between steps.
      chose).
 2. **Segment** — who receives it:
    - Click **⊕ Add existing user segment** to pick audience groups from a popup.
+   - If the audience you need doesn't exist yet, click **⊕ Create new segment**
+     to build one right there in a popup — you fill in its name, rules, and so on
+     without leaving the campaign. When you save it, the new segment is added and
+     automatically selected for this campaign, and its reach is included in the
+     audience summary.
    - Optionally **upload a user list** (CSV, XLS, XLSX). The tool reads the file
      and shows the **actual number of people in it** as "Manual upload users";
      uploading a different file replaces the previous one. (A sample file to try
