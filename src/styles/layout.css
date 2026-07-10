@@ -1,6 +1,58 @@
+/* Root column: fiserv brand bar on top, then the sidebar + main shell. */
+.app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* fiserv "Admin Tool" global header */
+.brandbar {
+  background: #2c5aa0;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 48px;
+  flex-shrink: 0;
+}
+.brand-mark {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.brand-mark-dot { color: #ff6a13; }
+.brand-app {
+  font-weight: 600;
+  font-size: 18px;
+  margin-left: 10px;
+}
+.brandbar-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.bb-role { font-weight: 700; }
+.bb-sep { opacity: 0.6; }
+.bb-name { opacity: 0.9; }
+.bb-signout {
+  margin-left: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 6px;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+}
+.bb-signout:hover { background: rgba(255, 255, 255, 0.28); }
+
 .app-shell {
   display: flex;
-  min-height: 100vh;
+  flex: 1;
+  min-height: 0;
 }
 
 /* Sidebar */
@@ -53,25 +105,11 @@
   background: #fff;
   border-bottom: 1px solid var(--border);
   padding: 10px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
-.topbar::before {
-  content: '';
-  display: block;
-  height: 4px;
-  background: var(--topbar);
-  margin: -10px -24px 10px;
-}
+.topbar-crumbs { display: flex; align-items: center; gap: 8px; }
+.tb-icon { color: var(--text-muted); opacity: 0.6; font-size: 13px; }
 .topbar-breadcrumb { color: var(--text-muted); font-size: 13px; }
 .crumb-sep { margin: 0 6px; }
-.topbar-title { margin: 4px 0 0; font-size: 22px; }
-
-/* Signed-in user + sign out */
-.topbar-user { display: flex; align-items: center; gap: 16px; }
-.user-meta { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.3; }
-.user-name { font-weight: 700; font-size: 14px; }
-.user-role { color: var(--text-muted); font-size: 12px; }
+.topbar-title { margin: 6px 0 0; font-size: 22px; }
 
 .app-content { padding: 24px; flex: 1; }
