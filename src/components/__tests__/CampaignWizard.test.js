@@ -61,6 +61,16 @@ test('walks through all steps (no Content step) and sends for approval', async (
   expect(campaignApi.create.mock.calls[0][0].status).toBe('Under approval');
 });
 
+test('prefills the Setup step from a template passed via router state', () => {
+  render(
+    <MemoryRouter initialEntries={[{ pathname: '/campaigns/new', state: { template: { name: 'Tpl Camp', channels: ['Email'] } } }]}>
+      <CampaignWizard />
+    </MemoryRouter>
+  );
+  expect(screen.getByText('Campaign details')).toBeInTheDocument();
+  expect(screen.getByDisplayValue('Tpl Camp')).toBeInTheDocument();
+});
+
 test('creates a new segment from inside the wizard and auto-selects it', async () => {
   segmentApi.create.mockResolvedValue({
     id: 'seg-new',

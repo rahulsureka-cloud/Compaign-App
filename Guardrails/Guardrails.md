@@ -33,7 +33,7 @@
 | GR-003 | Approval state machine (only *Under approval* → approve/reject) | Service + API | Campaigns → *Awaiting your approval* → `POST /api/campaigns/{id}/approve`·`/reject` | ✅ |
 | GR-004 | Disable Next / Send-for-approval until Setup is valid | UI | Create campaign wizard (Setup & Review steps) | ✅ |
 | GR-005 | Prevent double-submit (disable actions while in flight) | UI | Campaigns (Approve/Reject/Clone + confirm) & wizard submit | ✅ |
-| GR-006 | Role-based approval authorization (only Administrators may approve/reject) | UI | Login + Campaigns → *Awaiting your approval* queue | ✅ |
+| GR-006 | Role-based approval authorization (only Administrators may approve/reject) | UI | Login + **Approvals** screen (`/approvals`) → *Awaiting your approval* queue | ✅ |
 
 ---
 
@@ -154,28 +154,36 @@
 ## GR-006 — Role-based approval authorization
 
 - **Screen / endpoint:** Login page → the app is gated until a user signs in;
-  the Campaigns screen's **"Awaiting your approval"** queue (Approve/Reject).
+  the dedicated **Approvals** screen (`/approvals`) hosts the **"Awaiting your
+  approval"** queue (Approve/Reject). This queue **moved out of the Campaigns
+  list** — `CampaignList` no longer shows it.
 - **Control:** authentication context in
   [src/services/auth.js](../src/services/auth.js) exposes `isAdmin`;
-  [CampaignList.js](../src/components/Campaigns/CampaignList.js) renders the
-  approval queue (and its Approve/Reject actions) only when `isAdmin` is true.
+  [Approvals.js](../src/components/Approvals/Approvals.js) renders the approval
+  queue (and its Approve/Reject actions) and **self-guards** by redirecting
+  non-admins to `/dashboard`. The **Administration** nav group that links to it
+  is also hidden from non-admins in
+  [Sidebar.js](../src/components/Layout/Sidebar.js).
 - **Validation performed:**
   - There are exactly **two roles**: `admin` (Administrator) and `creator`
     (Campaign Creator).
   - Only `admin` may approve or reject; the approver queue is **hidden** for
     `creator` (who can still view all screens and create campaigns).
-- **Behaviour:** a Campaign Creator never sees the Approve/Reject controls, so
-  the approval action cannot be triggered from the UI. GR-003 remains the
-  server-side backstop for the transition itself.
+- **Behaviour:** a Campaign Creator never sees the Approvals menu entry, and even
+  a direct visit to `/approvals` is bounced to `/dashboard`, so the approval
+  action cannot be triggered from the UI. GR-003 remains the server-side backstop
+  for the transition itself.
 - **Implementation:** [auth.js](../src/services/auth.js),
   [Login.js](../src/components/Login/Login.js),
   [BrandBar.js](../src/components/Layout/BrandBar.js) (shows the logged-in role + Sign out),
-  [App.js](../src/App.js) (login gate),
-  [CampaignList.js](../src/components/Campaigns/CampaignList.js).
+  [App.js](../src/App.js) (login gate + `/approvals` route),
+  [Sidebar.js](../src/components/Layout/Sidebar.js) (admin-only Administration group),
+  [Approvals.js](../src/components/Approvals/Approvals.js) (self-guard + queue).
 - **Tests:** [Login.test.js](../src/components/__tests__/Login.test.js) (renders
   the two roles, invalid-credential handling, demo-fill sign-in, Show/Hide) and
-  [CampaignList.test.js](../src/components/__tests__/CampaignList.test.js) —
-  *"hides the approval queue and actions from a Campaign Creator (GR-006)"*.
+  [Approvals.test.js](../src/components/__tests__/Approvals.test.js) —
+  *"admin sees the approval queue and can approve after confirming"* and
+  *"a Campaign Creator is redirected away — no approval queue (GR-006)"*.
 - **Related:** GR-003 (approval state machine — server-side backstop).
 
 ---
@@ -204,3 +212,4 @@ Also: add a row to the **Register** table and a line to the **Change log**.
 | --- | --- | --- |
 | 2026-07-09 | GR-001 … GR-005 | Initial guardrails: date sanity, numeric ranges, approval state machine, wizard field-validity gating, double-submit prevention. |
 | 2026-07-10 | GR-006 | Added login page with two roles (Administrator, Campaign Creator); only Administrators see the approval queue / can approve/reject. |
+| 2026-07-10 | GR-006 | Approval queue moved out of the Campaigns list to a dedicated admin-only **Approvals** screen (`/approvals`), which self-guards by redirecting non-admins to `/dashboard`. Guardrail id/intent unchanged. |

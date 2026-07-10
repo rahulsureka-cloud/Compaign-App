@@ -36,9 +36,15 @@ Once signed in, the tool lets the user:
 - **Create campaigns via a 4-step wizard** (Setup → Segment → Location →
   Review), and read/update/clone them. (Delete exists on the API; the UI uses
   edit/clone.)
+- **Start a campaign from a Template**: the **Templates** screen (both roles)
+  lists ready-made campaign blueprints; **Use template** opens the campaign
+  wizard pre-filled from the blueprint. Route `/templates`.
 - Run an **approval workflow**: submit a campaign for approval, then
-  **Approve** (→ Active) or **Reject** (→ Draft) from the Campaigns screen's
-  "Awaiting your approval" queue, which also has status tabs.
+  **Approve** (→ Active) or **Reject** (→ Draft). This lives on a dedicated,
+  **admin-only Approvals screen** (route `/approvals`) — the "Awaiting your
+  approval" queue **moved out of the Campaigns list** and now sits here; the
+  Campaigns screen keeps only the status-tab table plus Edit/Clone/Create.
+  Approvals self-guards: non-admins are redirected to `/dashboard`.
 - View a **Campaign & Promotion Dashboard** showing how campaigns are
   performing as of today, including:
   - **Total Targeted Population**
@@ -100,8 +106,10 @@ Compaign App/
     │   ├── Login/                # Login page (split brand + sign-in)
     │   ├── Dashboard/
     │   ├── Campaigns/            # CampaignList, CampaignWizard, wizard/ steps
+    │   ├── Templates/           # TemplateList.js (blueprints), templateData.js
+    │   ├── Approvals/           # Approvals.js (admin-only approval queue; self-guards)
     │   ├── UserSegment/          # UserSegmentList, AddUserSegment, SegmentDefinitionForm.js (shared controlled form), CreateSegmentModal.js (in-wizard create), segmentOptions.js (shared option lists + describeRules)
-    │   ├── Layout/               # Sidebar, Topbar, BrandBar (fiserv Admin Tool header)
+    │   ├── Layout/               # Sidebar (Marketing + Administration groups), Topbar, BrandBar (fiserv Admin Tool header)
     │   ├── common/              # ConfirmDialog, FileUpload, parseUpload (shared, reused by wizard + segments)
     │   └── __tests__/            # Jest test files
     ├── services/                 # API client helpers (api.js) + auth.js (roles)

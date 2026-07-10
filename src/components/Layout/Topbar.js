@@ -6,6 +6,8 @@ const titles = {
   '/dashboard': 'Campaign & Promotion Dashboard',
   '/campaigns': 'Campaigns',
   '/campaigns/new': 'Create campaign',
+  '/templates': 'Templates',
+  '/approvals': 'Approvals',
   '/user-segment': 'User segment',
   '/user-segment/new': 'Add user segment',
 };

@@ -6,6 +6,8 @@ import BrandBar from './components/Layout/BrandBar';
 import Dashboard from './components/Dashboard/Dashboard';
 import CampaignList from './components/Campaigns/CampaignList';
 import CampaignWizard from './components/Campaigns/CampaignWizard';
+import TemplateList from './components/Templates/TemplateList';
+import Approvals from './components/Approvals/Approvals';
 import UserSegmentList from './components/UserSegment/UserSegmentList';
 import AddUserSegment from './components/UserSegment/AddUserSegment';
 import Login from './components/Login/Login';
@@ -34,6 +36,8 @@ export default function App() {
             <Route path="/campaigns" element={<CampaignList />} />
             <Route path="/campaigns/new" element={<CampaignWizard />} />
             <Route path="/campaigns/:id/edit" element={<CampaignWizard />} />
+            <Route path="/templates" element={<TemplateList />} />
+            <Route path="/approvals" element={<Approvals />} />
             <Route path="/user-segment" element={<UserSegmentList />} />
             <Route path="/user-segment/new" element={<AddUserSegment />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />

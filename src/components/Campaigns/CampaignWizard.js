@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { campaignApi, segmentApi } from '../../services/api';
 import { emptyCampaign, WIZARD_STEPS } from './campaignOptions';
 import WizardProgress from './wizard/WizardProgress';
@@ -13,9 +13,11 @@ export default function CampaignWizard() {
   const { id } = useParams();
   const isEdit = Boolean(id);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState(emptyCampaign());
+  // Seed from a "Use template" blueprint passed via router state, if present.
+  const [form, setForm] = useState(() => ({ ...emptyCampaign(), ...(location.state?.template || {}) }));
   const [segments, setSegments] = useState([]);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);

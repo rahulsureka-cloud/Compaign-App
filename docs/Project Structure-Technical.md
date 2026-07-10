@@ -115,13 +115,13 @@ Compaign App/
     │   │   └── Login.js           #   Login page (left summary + right sign-in card)
     │   ├── Layout/
     │   │   ├── BrandBar.js        #   Global "fiserv. Admin Tool" header + logged-in role/name / Sign out
-    │   │   ├── Sidebar.js         #   Left nav (Dashboard first, then Create/Campaigns/User segment)
+    │   │   ├── Sidebar.js         #   Left nav in two groups: Marketing (Dashboard, Create campaign, Templates, Campaigns, User segment) + Administration (Approvals, admin-only)
     │   │   └── Topbar.js          #   Breadcrumb (panel/home icons) + Marketing title
     │   ├── Dashboard/
     │   │   └── Dashboard.js       #   Performance metrics & table + decision bars
     │   ├── Campaigns/
-    │   │   ├── CampaignList.js       #   Approval queue + status tabs + clone/edit
-    │   │   ├── CampaignWizard.js     #   4-step create/edit wizard (orchestrator)
+    │   │   ├── CampaignList.js       #   Status-tab table + clone/edit/create (approval queue moved to Approvals/)
+    │   │   ├── CampaignWizard.js     #   4-step create/edit wizard (orchestrator; can pre-fill from a template)
     │   │   ├── campaignOptions.js    #   Shared option lists + empty-campaign factory
     │   │   └── wizard/
     │   │       ├── WizardProgress.js     #   Step tracker (Setup→Segment→Location→Review)
@@ -130,6 +130,11 @@ Compaign App/
     │   │       ├── StepLocation.js       #   Step 3: web/mobile placements
     │   │       ├── StepReview.js         #   Step 4: summary + edit jumps
     │   │       └── SegmentPickerModal.js #   "Select user segment" popup (uses UserSegment/segmentOptions)
+    │   ├── Templates/
+    │   │   ├── TemplateList.js       #   Campaign blueprints; "Use template" opens the wizard pre-filled (via router state)
+    │   │   └── templateData.js       #   Blueprint definitions
+    │   ├── Approvals/
+    │   │   └── Approvals.js          #   Admin-only approval queue (moved out of CampaignList); self-guards → redirects non-admins to /dashboard
     │   ├── UserSegment/
     │   │   ├── UserSegmentList.js    #   Segment list
     │   │   ├── AddUserSegment.js     #   Build segment + upload list (reuses SegmentDefinitionForm + common/FileUpload)
@@ -157,6 +162,7 @@ Compaign App/
     │   ├── layout.css            #   Shell, fiserv brand bar, sidebar, topbar
     │   ├── dashboard.css
     │   ├── campaigns.css         #   List, status tabs, approve/reject/clone actions
+    │   ├── templates.css         #   Templates screen (blueprint cards)
     │   ├── wizard.css            #   Wizard steps, channel cards, segment modal
     │   └── segments.css
     │
@@ -294,13 +300,22 @@ the bundled `src/data/*.json` so read-only screens still render.)*
    global [BrandBar.js](../src/components/Layout/BrandBar.js) (the blue
    "fiserv. Admin Tool" header) above the persistent `Sidebar` + `Topbar`, and
    maps URLs to page components: `/dashboard`, `/campaigns`, `/campaigns/new`,
-   `/campaigns/:id/edit`, `/user-segment`, `/user-segment/new`.
+   `/campaigns/:id/edit`, `/templates`, `/approvals`, `/user-segment`,
+   `/user-segment/new`.
+   - `/templates` renders the **Templates** screen (both roles); its **Use
+     template** action navigates to the wizard with the chosen blueprint in
+     router `location.state.template`, which `CampaignWizard` reads to pre-fill.
+   - `/approvals` renders the **admin-only Approvals** screen. Approvals
+     **self-guards**: if the signed-in user isn't an Administrator it redirects
+     to `/dashboard`. The approval queue moved here out of `CampaignList`.
 4. **Navigation & header** — [BrandBar.js](../src/components/Layout/BrandBar.js)
    shows the "fiserv. Admin Tool" brand plus the **logged-in user's role**, name,
    and a **Sign out** button on every screen;
-   [Sidebar.js](../src/components/Layout/Sidebar.js) uses `NavLink`s; and
-   [Topbar.js](../src/components/Layout/Topbar.js) shows the breadcrumb for the
-   current route and the **🏬 Marketing** title.
+   [Sidebar.js](../src/components/Layout/Sidebar.js) uses `NavLink`s grouped into
+   **Marketing** (Dashboard, Create campaign, Templates, Campaigns, User segment)
+   and **Administration** (Approvals) — the Administration group is **admin-only**;
+   and [Topbar.js](../src/components/Layout/Topbar.js) shows the breadcrumb for
+   the current route and the **🏬 Marketing** title.
 5. **Data access** — each page calls the matching function in
    [services/api.js](../src/services/api.js) (`campaignApi` / `segmentApi`);
    nothing else touches the network.
@@ -308,10 +323,17 @@ the bundled `src/data/*.json` so read-only screens still render.)*
    - [Dashboard.js](../src/components/Dashboard/Dashboard.js) → `getDashboard()`
      → renders stat cards + performance table + decision bars.
    - [CampaignList.js](../src/components/Campaigns/CampaignList.js) →
-     `getAll()` / `approve()` / `reject()` / `clone()`. Renders the status-tab
-     table for everyone and the **"Awaiting your approval"** queue only for
-     Administrators (GR-006); Approve/Reject open a
-     [ConfirmDialog](../src/components/common/ConfirmDialog.js) first.
+     `getAll()` / `clone()`. Renders the status-tab table plus Edit/Clone/Create
+     for everyone. The **"Awaiting your approval"** queue no longer lives here —
+     it moved to the dedicated Approvals page.
+   - [Approvals.js](../src/components/Approvals/Approvals.js) →
+     `getAll()` / `approve()` / `reject()`. The **admin-only** approval queue;
+     Approve/Reject open a
+     [ConfirmDialog](../src/components/common/ConfirmDialog.js) first (GR-006). It
+     self-guards by redirecting non-admins to `/dashboard`.
+   - [TemplateList.js](../src/components/Templates/TemplateList.js) → lists
+     campaign blueprints from `templateData.js`; **Use template** opens the
+     wizard pre-filled via router `location.state.template`.
    - [CampaignWizard.js](../src/components/Campaigns/CampaignWizard.js) →
      the 4-step create/edit wizard (`create()` / `update()`), shared for both new
      and edit via the `:id` route. Delegates to the step components under
@@ -372,8 +394,10 @@ the bundled `src/data/*.json` so read-only screens still render.)*
   approval** action (saves with status `Under approval`). *(The earlier "Content"
   step was removed; the `assets` field remains in the model/seed only.)*
 - **Approval workflow:** campaigns move `Draft`/`In-progress` → `Under approval`
-  (via Send for approval) → `Active` (Approve) or back to `Draft` (Reject). The
-  Campaigns screen shows an approval queue plus tabs for every status.
+  (via Send for approval) → `Active` (Approve) or back to `Draft` (Reject).
+  Approve/Reject now live on the dedicated **admin-only Approvals** screen
+  (`/approvals`); the Campaigns screen shows only the status tabs for every
+  status (plus Edit/Clone/Create).
 - **Dummy metrics guarantee:** `CampaignService.EnsureMetrics()` fills any zero
   `targetedPopulation`/`accepted`/`declined`/`clickedUnfinished` on Create and
   Clone, so every campaign always has non-zero numbers and a colored dashboard
@@ -411,12 +435,13 @@ each cited as `GR-###` in code:
   Setup step is valid (name, dates with end ≥ start, ≥1 channel).
 - **GR-005 (UI):** an in-flight-action `busy` guard disables
   Approve/Reject/Clone and the confirm dialog to prevent double-submits.
-- **GR-006 (UI):** role-based authorization — only **Administrators** see the
-  *Awaiting your approval* queue and its Approve/Reject actions; **Campaign
-  Creators** cannot approve/reject. Enforced via
-  [auth.js](../src/services/auth.js) (`isAdmin`) in
-  [CampaignList.js](../src/components/Campaigns/CampaignList.js). GR-003 remains
-  the server-side backstop.
+- **GR-006 (UI):** role-based authorization — the *Awaiting your approval* queue
+  and its Approve/Reject actions live on the **admin-only Approvals** screen
+  ([Approvals.js](../src/components/Approvals/Approvals.js)), which self-guards by
+  redirecting non-admins to `/dashboard`; the Administration nav group is also
+  hidden from **Campaign Creators**. Enforced via
+  [auth.js](../src/services/auth.js) (`isAdmin`). GR-003 remains the server-side
+  backstop.
 
 ### The data contract (keeps both layers aligned)
 
@@ -454,7 +479,7 @@ When it prints **`Compiled successfully!`**, open **http://localhost:3000**.
 ### Run the tests
 
 ```powershell
-# Frontend (Jest + React Testing Library) — 31 tests across 8 suites
+# Frontend (Jest + React Testing Library) — 32 tests across 10 suites
 npm run test:ci
 
 # Backend (xUnit) — 27 tests

@@ -1,0 +1,7 @@
+.template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.template-card { display: flex; flex-direction: column; gap: 10px; }
+.template-card h3 { margin: 0; }
+.template-summary { color: var(--text-muted); font-size: 13px; flex: 1; }
+.template-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.template-channels { color: var(--text-muted); font-size: 12px; }
+.template-card .btn { align-self: flex-start; }

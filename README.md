@@ -65,10 +65,15 @@ dotnet test src/api.Tests/MarketingApi.Tests.csproj
   (multi-select channels, segment picker, placements, summary → *Send for
   approval*). The Segment step can **upload a user list** (CSV/XLS/XLSX) and
   shows the real parsed user count — a ready sample lives in
-  [DummyData/dummy-users.csv](DummyData/dummy-users.csv).
-- **Campaigns** — an **"Awaiting your approval"** queue with **Approve/Reject**
-  (with a confirmation dialog), **status tabs** (In-progress, Under approval,
-  Draft, Active, Completed), plus **Edit** and **Clone** actions.
+  [DummyData/dummy-users.csv](DummyData/dummy-users.csv) — and can **create a new
+  segment inline** without leaving the wizard.
+- **Templates** — start a campaign from a ready-made **blueprint**; *Use
+  template* opens the wizard pre-filled. (Both roles.)
+- **Campaigns** — the full campaign list with **status tabs** (In-progress,
+  Under approval, Draft, Active, Completed), plus **Edit** and **Clone** actions.
+- **Approvals** *(Administrators only)* — the dedicated **"Awaiting your
+  approval"** queue with **Approve/Reject** (confirmation dialog). Moved here out
+  of the Campaigns screen.
 - **User segment** — import a custom user list, review uploaded users, build a
   segment from criteria rules (e.g. `Age > 25 AND State is CA`) with AND/OR
   match logic and an estimated audience reach.

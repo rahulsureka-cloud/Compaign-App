@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { campaignApi } from '../../services/api';
-import { useAuth } from '../../services/auth';
 import { CAMPAIGN_STATUSES } from './campaignOptions';
-import ConfirmDialog from '../common/ConfirmDialog';
 import '../../styles/campaigns.css';
 
 const channelText = (c) => (c.channels && c.channels.length ? c.channels.join(', ') : '—');
@@ -13,9 +11,7 @@ export default function CampaignList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('Active');
-  const [confirm, setConfirm] = useState(null); // { action: 'approve'|'reject', campaign }
   const [busy, setBusy] = useState(false);       // GR-005: in-flight action guard
-  const { isAdmin } = useAuth();                  // GR-006: only admins may approve/reject
   const navigate = useNavigate();
 
   const load = () => {
@@ -29,7 +25,6 @@ export default function CampaignList() {
 
   useEffect(load, []);
 
-  const awaitingApproval = campaigns.filter((c) => c.status === 'Under approval');
   const tabCampaigns = campaigns.filter((c) => c.status === activeTab);
 
   const act = async (fn, id) => {
@@ -45,62 +40,11 @@ export default function CampaignList() {
     }
   };
 
-  const runConfirm = async () => {
-    if (!confirm) return;
-    const fn = confirm.action === 'approve' ? campaignApi.approve : campaignApi.reject;
-    await act(fn, confirm.campaign.id);
-    setConfirm(null);
-  };
-
   if (loading) return <div className="loading">Loading campaigns…</div>;
 
   return (
     <div className="campaigns-page">
       {error && <div className="error-banner">{error}</div>}
-
-      {/* Awaiting your approval — approver-only queue (GR-006).
-          Campaign Creators cannot approve/reject, so the queue is hidden for them. */}
-      {isAdmin && (
-      <div className="panel">
-        <h2>Awaiting your approval</h2>
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Channel</th>
-              <th>Start date</th>
-              <th>End date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {awaitingApproval.length === 0 && (
-              <tr><td colSpan="5" className="empty">Nothing awaiting approval.</td></tr>
-            )}
-            {awaitingApproval.map((c) => (
-              <tr key={c.id}>
-                <td className="cell-title link-text">{c.name}</td>
-                <td>{channelText(c)}</td>
-                <td>{c.startDate}</td>
-                <td>{c.endDate}</td>
-                <td className="actions">
-                  <button
-                    className="link-action approve"
-                    disabled={busy}
-                    onClick={() => setConfirm({ action: 'approve', campaign: c })}
-                  >Approve</button>
-                  <button
-                    className="link-action reject"
-                    disabled={busy}
-                    onClick={() => setConfirm({ action: 'reject', campaign: c })}
-                  >Reject</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      )}
 
       {/* Campaigns with status tabs */}
       <div className="panel">
@@ -160,21 +104,6 @@ export default function CampaignList() {
           </tbody>
         </table>
       </div>
-
-      {confirm && (
-        <ConfirmDialog
-          title={`${confirm.action === 'approve' ? 'Approve' : 'Reject'} campaign?`}
-          message={
-            <>
-              Are you sure you want to {confirm.action} the campaign{' '}
-              <strong>{confirm.campaign.name}</strong>?
-            </>
-          }
-          busy={busy}
-          onConfirm={runConfirm}
-          onCancel={() => setConfirm(null)}
-        />
-      )}
     </div>
   );
 }

@@ -83,10 +83,17 @@ actually use it on screen. No technical steps — just clicks.
 ### Getting around
 
 - Once signed in you land on the **Dashboard**.
-- On the **left side** is the **Marketing** menu, in this order:
-  **Dashboard**, **Create campaign**, **Campaigns**, and **User segment**.
+- On the **left side** the menu is split into two groups:
+  - **Marketing** (everyone sees this): **Dashboard**, **Create campaign**,
+    **Templates**, **Campaigns**, and **User segment**.
+  - **Administration** (only **Administrators** see this): **Approvals**.
 - Click any menu item to go to that screen. The bar at the top always reminds
   you where you are (for example, *Marketing › Campaigns*).
+- **Templates** lets you start a campaign from a ready-made **blueprint** that
+  pre-fills the wizard, so you don't build every promotion from scratch.
+- **Approvals** is the dedicated screen where Administrators approve or reject
+  campaigns that are waiting — this used to sit on the Campaigns screen and has
+  now moved to its own menu item.
 
 ### A. View campaign performance — the Dashboard
 
@@ -106,13 +113,12 @@ actually use it on screen. No technical steps — just clicks.
 
 ### B. See all your campaigns — the Campaigns screen
 
-Click **Campaigns** in the left menu. This screen has two parts:
+Click **Campaigns** in the left menu. This screen shows the full list of
+campaigns, organised by **status tabs**. *(The "Awaiting your approval" queue
+that used to sit here has moved to the dedicated **Approvals** screen — see
+section E.)*
 
-**"Awaiting your approval"** (top): a list of campaigns that have been sent for
-approval, each with **Approve** and **Reject** buttons (see section E). *This
-queue is only shown to **Administrators**; Campaign Creators don't see it.*
-
-**"Campaigns"** (below): the full list, organised by **status tabs**:
+The status tabs are:
 - **In-progress** — being worked on / journey being defined.
 - **Under approval** — waiting for an approver.
 - **Draft** — saved but not submitted.
@@ -176,7 +182,8 @@ twice.
 
 ### E. Approve or reject a campaign *(Administrators only)*
 
-1. On the **Campaigns** screen, look at **"Awaiting your approval"**.
+1. Click **Approvals** in the **Administration** menu group (only Administrators
+   see it) to open the **"Awaiting your approval"** queue.
 2. Click **Approve** or **Reject** on a campaign.
 3. A **confirmation popup** appears — *"Are you sure you want to approve the
    campaign **[name]**?"* — with **No** / **Yes**.
@@ -240,8 +247,10 @@ similar campaign.
 | **Login** | Sign in as Administrator or Campaign Creator (your role sets what you can do). |
 | **Dashboard** | Check how campaigns are performing (targeted, accepted, declined, unfinished). |
 | **Create campaign** | Add a new promotion via the 4-step wizard (Setup → Segment → Location → Review). |
-| **Campaigns** | Approve/reject campaigns awaiting approval; browse campaigns by status; edit or clone them. |
+| **Templates** | Start a campaign from a ready-made blueprint that pre-fills the wizard. |
+| **Campaigns** | Browse campaigns by status; edit or clone them. |
 | **User segment** | Build and manage audience groups; upload customer lists. |
+| **Approvals** *(Administrators only)* | Approve or reject campaigns awaiting approval (moved out of the Campaigns screen). |
 
 That's the whole application from an everyday user's point of view: **plan a
 promotion, choose who receives it, get it approved, and watch how it performs.**
