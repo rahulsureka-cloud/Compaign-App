@@ -76,8 +76,9 @@ actually use it on screen. No technical steps — just clicks.
     **no** approve/reject.
 - After signing in you enter the app and **always land on the Dashboard first** —
   even if the previous session had navigated away to another page (e.g. Create
-  campaign) before signing out. Your name and role show at the top right, with a
-  **Sign out** button.
+  campaign) before signing out. Every screen has a blue **"fiserv. Admin Tool"**
+  header along the top; on its right it shows **your role** (Administrator or
+  Campaign Creator), your name, and a **Sign out** button.
 
 ### Getting around
 

@@ -169,7 +169,7 @@
   server-side backstop for the transition itself.
 - **Implementation:** [auth.js](../src/services/auth.js),
   [Login.js](../src/components/Login/Login.js),
-  [Topbar.js](../src/components/Layout/Topbar.js) (shows user + Sign out),
+  [BrandBar.js](../src/components/Layout/BrandBar.js) (shows the logged-in role + Sign out),
   [App.js](../src/App.js) (login gate),
   [CampaignList.js](../src/components/Campaigns/CampaignList.js).
 - **Tests:** [Login.test.js](../src/components/__tests__/Login.test.js) (renders

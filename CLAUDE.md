@@ -26,6 +26,11 @@ starts on the Dashboard, regardless of the prior route). There are exactly
   create/edit/clone campaigns, but **cannot approve/reject** (the *Awaiting your
   approval* queue is hidden). Enforced by **GR-006**.
 
+Every authenticated screen shows a global **"fiserv. Admin Tool"** brand-bar
+header (`src/components/Layout/BrandBar.js`) with the logged-in user's role and
+name and a **Sign out** control; below it the Topbar shows the breadcrumb and
+the **🏬 Marketing** title.
+
 Once signed in, the tool lets the user:
 
 - **Create campaigns via a 4-step wizard** (Setup → Segment → Location →
@@ -96,7 +101,7 @@ Compaign App/
     │   ├── Dashboard/
     │   ├── Campaigns/            # CampaignList, CampaignWizard, wizard/ steps
     │   ├── UserSegment/          # UserSegmentList, AddUserSegment, SegmentDefinitionForm.js (shared controlled form), CreateSegmentModal.js (in-wizard create), segmentOptions.js (shared option lists + describeRules)
-    │   ├── Layout/
+    │   ├── Layout/               # Sidebar, Topbar, BrandBar (fiserv Admin Tool header)
     │   ├── common/              # ConfirmDialog, FileUpload, parseUpload (shared, reused by wizard + segments)
     │   └── __tests__/            # Jest test files
     ├── services/                 # API client helpers (api.js) + auth.js (roles)

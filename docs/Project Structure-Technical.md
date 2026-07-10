@@ -114,8 +114,9 @@ Compaign App/
     │   ├── Login/
     │   │   └── Login.js           #   Login page (left summary + right sign-in card)
     │   ├── Layout/
+    │   │   ├── BrandBar.js        #   Global "fiserv. Admin Tool" header + logged-in role/name / Sign out
     │   │   ├── Sidebar.js         #   Left nav (Dashboard first, then Create/Campaigns/User segment)
-    │   │   └── Topbar.js          #   Breadcrumb + title + signed-in user / Sign out
+    │   │   └── Topbar.js          #   Breadcrumb (panel/home icons) + Marketing title
     │   ├── Dashboard/
     │   │   └── Dashboard.js       #   Performance metrics & table + decision bars
     │   ├── Campaigns/
@@ -153,7 +154,7 @@ Compaign App/
     ├── styles/                   # ── CSS ──
     │   ├── global.css            #   Tokens, buttons, tables, badges, form fields, confirm dialog
     │   ├── login.css             #   Login page split layout (brand panel + sign-in card)
-    │   ├── layout.css            #   Shell, sidebar, topbar (+ signed-in user)
+    │   ├── layout.css            #   Shell, fiserv brand bar, sidebar, topbar
     │   ├── dashboard.css
     │   ├── campaigns.css         #   List, status tabs, approve/reject/clone actions
     │   ├── wizard.css            #   Wizard steps, channel cards, segment modal
@@ -289,14 +290,17 @@ the bundled `src/data/*.json` so read-only screens still render.)*
    On successful sign-in the login page calls `navigate('/dashboard')`, so a user
    **always lands on the Dashboard** even if the previous session logged out from
    another route (the browser URL is otherwise preserved while logged out).
-3. **Shell & routing** — once authenticated, [App.js](../src/App.js) renders the
-   persistent `Sidebar` + `Topbar` and maps URLs to page components:
-   `/dashboard`, `/campaigns`, `/campaigns/new`, `/campaigns/:id/edit`,
-   `/user-segment`, `/user-segment/new`.
-4. **Navigation** — [Sidebar.js](../src/components/Layout/Sidebar.js) uses
-   `NavLink`s; [Topbar.js](../src/components/Layout/Topbar.js) shows the
-   breadcrumb for the current route plus the signed-in user, role, and a
-   **Sign out** button.
+3. **Shell & routing** — once authenticated, [App.js](../src/App.js) renders a
+   global [BrandBar.js](../src/components/Layout/BrandBar.js) (the blue
+   "fiserv. Admin Tool" header) above the persistent `Sidebar` + `Topbar`, and
+   maps URLs to page components: `/dashboard`, `/campaigns`, `/campaigns/new`,
+   `/campaigns/:id/edit`, `/user-segment`, `/user-segment/new`.
+4. **Navigation & header** — [BrandBar.js](../src/components/Layout/BrandBar.js)
+   shows the "fiserv. Admin Tool" brand plus the **logged-in user's role**, name,
+   and a **Sign out** button on every screen;
+   [Sidebar.js](../src/components/Layout/Sidebar.js) uses `NavLink`s; and
+   [Topbar.js](../src/components/Layout/Topbar.js) shows the breadcrumb for the
+   current route and the **🏬 Marketing** title.
 5. **Data access** — each page calls the matching function in
    [services/api.js](../src/services/api.js) (`campaignApi` / `segmentApi`);
    nothing else touches the network.
