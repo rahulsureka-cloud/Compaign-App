@@ -282,6 +282,9 @@ the bundled `src/data/*.json` so read-only screens still render.)*
    signed in it renders [Login.js](../src/components/Login/Login.js) instead of
    the app shell. Sign-in matches one of the two frontend demo users and stores
    the session (mirrored to `sessionStorage`, so a refresh keeps you signed in).
+   On successful sign-in the login page calls `navigate('/dashboard')`, so a user
+   **always lands on the Dashboard** even if the previous session logged out from
+   another route (the browser URL is otherwise preserved while logged out).
 3. **Shell & routing** — once authenticated, [App.js](../src/App.js) renders the
    persistent `Sidebar` + `Topbar` and maps URLs to page components:
    `/dashboard`, `/campaigns`, `/campaigns/new`, `/campaigns/:id/edit`,
@@ -320,7 +323,8 @@ the bundled `src/data/*.json` so read-only screens still render.)*
   **Administrator** (`admin`) and **Campaign Creator** (`creator`). The role is
   kept in context (and `sessionStorage`); `isAdmin` drives the GR-006 gating of
   the approval queue. This is a POC, so there is no backend auth or password
-  store — see [auth.js](../src/services/auth.js).
+  store — see [auth.js](../src/services/auth.js). Signing in redirects to
+  `/dashboard` so every session starts on the Dashboard.
 - **Create/edit wizard (4 steps):** `Setup → Segment → Location → Review`.
   Setup captures name/description/keywords/product/priority/dates and
   multi-select **channels**; Segment picks user segments (modal) + optional list
@@ -400,7 +404,7 @@ When it prints **`Compiled successfully!`**, open **http://localhost:3000**.
 ### Run the tests
 
 ```powershell
-# Frontend (Jest + React Testing Library) — 21 tests across 6 suites
+# Frontend (Jest + React Testing Library) — 22 tests across 6 suites
 npm run test:ci
 
 # Backend (xUnit) — 27 tests

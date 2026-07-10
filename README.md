@@ -53,9 +53,10 @@ dotnet test src/api.Tests/MarketingApi.Tests.csproj
 ## Features
 
 - **Login & roles** — the app is gated behind a login page (left summary panel +
-  right sign-in card with click-to-fill demo accounts). **Administrator** has
-  full access (incl. approve/reject); **Campaign Creator** sees all screens and
-  can create/edit/clone but not approve/reject (the approval queue is hidden).
+  right sign-in card with click-to-fill demo accounts). Signing in always lands
+  you on the Dashboard. **Administrator** has full access (incl. approve/reject);
+  **Campaign Creator** sees all screens and can create/edit/clone but not
+  approve/reject (the approval queue is hidden).
 - **Dashboard** — Total Targeted Population and per-decision breakdown
   (Accepted/Fulfilled, Declined, Clicked but Unfinished) with a per-campaign
   performance table. Every campaign carries non-zero dummy metrics.

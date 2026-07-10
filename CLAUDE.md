@@ -15,8 +15,10 @@ hold the **"Marketing"** entitlement.
 
 **Login & roles.** The app opens on a **login page** (split layout: a left
 summary panel describing the app + a right "Welcome back" sign-in card with
-click-to-fill demo accounts). Until a user signs in, the whole app is gated.
-There are exactly **two roles** (frontend-only demo users — this is a POC; see
+click-to-fill demo accounts). Until a user signs in, the whole app is gated, and
+on successful sign-in the user is redirected to `/dashboard` (so every session
+starts on the Dashboard, regardless of the prior route). There are exactly
+**two roles** (frontend-only demo users — this is a POC; see
 `src/services/auth.js`):
 
 - **Administrator** (`admin` / `admin123`) — full access; **can approve/reject**.

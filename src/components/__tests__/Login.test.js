@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import Login from '../Login/Login';
 import { AuthProvider, useAuth } from '../../services/auth';
 
@@ -10,11 +11,19 @@ function AuthProbe() {
   return <div data-testid="who">{user ? `${user.name}:${user.role}` : 'anon'}</div>;
 }
 
+// Reveals the current route so we can assert the post-login redirect.
+function LocationProbe() {
+  return <div data-testid="path">{useLocation().pathname}</div>;
+}
+
 const renderLogin = () =>
   render(
     <AuthProvider>
-      <Login />
-      <AuthProbe />
+      <MemoryRouter initialEntries={['/campaigns/new']}>
+        <Login />
+        <AuthProbe />
+        <LocationProbe />
+      </MemoryRouter>
     </AuthProvider>
   );
 
@@ -46,6 +55,14 @@ test('clicking a demo account fills the form and signs in as that role', async (
   await userEvent.click(screen.getByText('Administrator'));
   await userEvent.click(screen.getByRole('button', { name: 'Sign in' }));
   expect(screen.getByTestId('who')).toHaveTextContent('Administrator:admin');
+});
+
+test('lands on the dashboard after signing in, regardless of prior route', async () => {
+  renderLogin(); // starts at /campaigns/new
+  expect(screen.getByTestId('path')).toHaveTextContent('/campaigns/new');
+  await userEvent.click(screen.getByText('Campaign Creator'));
+  await userEvent.click(screen.getByRole('button', { name: 'Sign in' }));
+  expect(screen.getByTestId('path')).toHaveTextContent('/dashboard');
 });
 
 test('Show/Hide toggles password visibility', async () => {

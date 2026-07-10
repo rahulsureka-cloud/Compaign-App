@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth, DEMO_USERS } from '../../services/auth';
 import '../../styles/login.css';
 
@@ -21,6 +22,7 @@ const FEATURES = [
 
 export default function Login() {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -29,7 +31,13 @@ export default function Login() {
   const submit = (e) => {
     e.preventDefault();
     const result = login(username, password);
-    if (!result.ok) setError(result.error);
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
+    // Always land on the Dashboard after signing in, regardless of which page
+    // the previous session was on when it logged out.
+    navigate('/dashboard', { replace: true });
   };
 
   const fillDemo = (user) => {

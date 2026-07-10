@@ -74,8 +74,10 @@ actually use it on screen. No technical steps — just clicks.
   - **Administrator** (`admin`) — full access, including approve/reject.
   - **Campaign Creator** (`creator`) — all screens and create campaigns, but
     **no** approve/reject.
-- After signing in you enter the app. Your name and role show at the top right,
-  with a **Sign out** button.
+- After signing in you enter the app and **always land on the Dashboard first** —
+  even if the previous session had navigated away to another page (e.g. Create
+  campaign) before signing out. Your name and role show at the top right, with a
+  **Sign out** button.
 
 ### Getting around
 
