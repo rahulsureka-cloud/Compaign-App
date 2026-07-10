@@ -78,7 +78,8 @@ actually use it on screen. No technical steps — just clicks.
   even if the previous session had navigated away to another page (e.g. Create
   campaign) before signing out. Every screen has a blue **"fiserv. Admin Tool"**
   header along the top; on its right it shows **your role** (Administrator or
-  Campaign Creator), your name, and a **Sign out** button.
+  Campaign Creator), your name, and a **Sign out** button. Signing out returns you
+  to a clean login page (it doesn't leave the page you were on in the address bar).
 
 ### Getting around
 

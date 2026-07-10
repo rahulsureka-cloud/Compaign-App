@@ -29,7 +29,8 @@ starts on the Dashboard, regardless of the prior route). There are exactly
 Every authenticated screen shows a global **"fiserv. Admin Tool"** brand-bar
 header (`src/components/Layout/BrandBar.js`) with the logged-in user's role and
 name and a **Sign out** control; below it the Topbar shows the breadcrumb and
-the **🏬 Marketing** title.
+the **🏬 Marketing** title. **Sign out** resets the URL to `/` (so the login page
+never keeps the previous route, e.g. `/audit-trail`, in the address bar).
 
 Once signed in, the tool lets the user:
 

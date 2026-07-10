@@ -317,7 +317,8 @@ the bundled `src/data/*.json` so read-only screens still render.)*
      to `/dashboard`. The approval queue moved here out of `CampaignList`.
 4. **Navigation & header** — [BrandBar.js](../src/components/Layout/BrandBar.js)
    shows the "fiserv. Admin Tool" brand plus the **logged-in user's role**, name,
-   and a **Sign out** button on every screen;
+   and a **Sign out** button on every screen (Sign out clears the session and
+   navigates to `/` so the login page doesn't keep the previous route in the URL);
    [Sidebar.js](../src/components/Layout/Sidebar.js) uses `NavLink`s grouped into
    **Marketing** (Dashboard, Create campaign, Templates, Campaigns, User segment)
    and **Administration** (Approvals) — the Administration group is **admin-only**;
@@ -486,7 +487,7 @@ When it prints **`Compiled successfully!`**, open **http://localhost:3000**.
 ### Run the tests
 
 ```powershell
-# Frontend (Jest + React Testing Library) — 42 tests across 12 suites
+# Frontend (Jest + React Testing Library) — 43 tests across 13 suites
 npm run test:ci
 
 # Backend (xUnit) — 27 tests
