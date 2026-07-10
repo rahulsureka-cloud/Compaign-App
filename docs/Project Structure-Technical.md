@@ -111,9 +111,11 @@ Compaign App/
     ├── setupTests.js             # Jest setup (jest-dom matchers)
     │
     ├── components/               # ── FRONTEND UI ──
+    │   ├── Login/
+    │   │   └── Login.js           #   Login page (left summary + right sign-in card)
     │   ├── Layout/
     │   │   ├── Sidebar.js         #   Left nav (Dashboard first, then Create/Campaigns/User segment)
-    │   │   └── Topbar.js          #   Breadcrumb + title bar
+    │   │   └── Topbar.js          #   Breadcrumb + title + signed-in user / Sign out
     │   ├── Dashboard/
     │   │   └── Dashboard.js       #   Performance metrics & table + decision bars
     │   ├── Campaigns/
@@ -136,7 +138,8 @@ Compaign App/
     │   └── __tests__/             #   Jest component tests
     │
     ├── services/
-    │   └── api.js                # Single API client (fetch + fallback to dummy data)
+    │   ├── api.js                # Single API client (fetch + fallback to dummy data)
+    │   └── auth.js               # AuthProvider/useAuth: two roles, session state (GR-006)
     │
     ├── data/                     # ── DUMMY DATA (JSON) ──
     │   ├── campaigns.json
@@ -145,7 +148,8 @@ Compaign App/
     │
     ├── styles/                   # ── CSS ──
     │   ├── global.css            #   Tokens, buttons, tables, badges, form fields, confirm dialog
-    │   ├── layout.css            #   Shell, sidebar, topbar
+    │   ├── login.css             #   Login page split layout (brand panel + sign-in card)
+    │   ├── layout.css            #   Shell, sidebar, topbar (+ signed-in user)
     │   ├── dashboard.css
     │   ├── campaigns.css         #   List, status tabs, approve/reject/clone actions
     │   ├── wizard.css            #   Wizard steps, channel cards, segment modal
@@ -175,6 +179,10 @@ Compaign App/
         ├── CampaignValidatorTests.cs
         └── SegmentServiceTests.cs
 ```
+
+> Component tests live in `src/components/__tests__/` — including
+> `Login.test.js` (the login page + roles) and `CampaignList.test.js` (which
+> covers the GR-006 role gating of the approval queue).
 
 **How it's organized (the reasoning):**
 
@@ -268,24 +276,31 @@ the bundled `src/data/*.json` so read-only screens still render.)*
 ### Frontend flow (per screen)
 
 1. **Bootstrap** — [index.js](../src/index.js) mounts `<App/>` inside a
-   `BrowserRouter` and imports global CSS.
-2. **Shell & routing** — [App.js](../src/App.js) renders the persistent
-   `Sidebar` + `Topbar` and maps URLs to page components:
+   `BrowserRouter`, wraps it in the `AuthProvider`
+   ([services/auth.js](../src/services/auth.js)), and imports global CSS.
+2. **Login gate** — [App.js](../src/App.js) reads `useAuth()`; while no user is
+   signed in it renders [Login.js](../src/components/Login/Login.js) instead of
+   the app shell. Sign-in matches one of the two frontend demo users and stores
+   the session (mirrored to `sessionStorage`, so a refresh keeps you signed in).
+3. **Shell & routing** — once authenticated, [App.js](../src/App.js) renders the
+   persistent `Sidebar` + `Topbar` and maps URLs to page components:
    `/dashboard`, `/campaigns`, `/campaigns/new`, `/campaigns/:id/edit`,
    `/user-segment`, `/user-segment/new`.
-3. **Navigation** — [Sidebar.js](../src/components/Layout/Sidebar.js) uses
+4. **Navigation** — [Sidebar.js](../src/components/Layout/Sidebar.js) uses
    `NavLink`s; [Topbar.js](../src/components/Layout/Topbar.js) shows the
-   breadcrumb for the current route.
-4. **Data access** — each page calls the matching function in
+   breadcrumb for the current route plus the signed-in user, role, and a
+   **Sign out** button.
+5. **Data access** — each page calls the matching function in
    [services/api.js](../src/services/api.js) (`campaignApi` / `segmentApi`);
    nothing else touches the network.
-5. **Pages**
+6. **Pages**
    - [Dashboard.js](../src/components/Dashboard/Dashboard.js) → `getDashboard()`
      → renders stat cards + performance table + decision bars.
    - [CampaignList.js](../src/components/Campaigns/CampaignList.js) →
-     `getAll()` / `approve()` / `reject()` / `clone()`. Renders the
-     **"Awaiting your approval"** queue and the status-tab table; Approve/Reject
-     open a [ConfirmDialog](../src/components/common/ConfirmDialog.js) first.
+     `getAll()` / `approve()` / `reject()` / `clone()`. Renders the status-tab
+     table for everyone and the **"Awaiting your approval"** queue only for
+     Administrators (GR-006); Approve/Reject open a
+     [ConfirmDialog](../src/components/common/ConfirmDialog.js) first.
    - [CampaignWizard.js](../src/components/Campaigns/CampaignWizard.js) →
      the 4-step create/edit wizard (`create()` / `update()`), shared for both new
      and edit via the `:id` route. Delegates to the step components under
@@ -294,12 +309,18 @@ the bundled `src/data/*.json` so read-only screens still render.)*
      `getAll()` / `remove()`.
    - [AddUserSegment.js](../src/components/UserSegment/AddUserSegment.js) →
      builds rules + `create()`; also previews `uploadedUsers.json`.
-6. **Proxy** — in development, [setupProxy.js](../src/setupProxy.js) forwards any
+7. **Proxy** — in development, [setupProxy.js](../src/setupProxy.js) forwards any
    `/api/*` request from port 3000 to the backend on port 5000, so the two run
    independently without CORS friction in the browser.
 
 ### Key feature flows
 
+- **Login & roles:** the app is gated by [App.js](../src/App.js) behind the
+  `AuthProvider`. Two frontend demo users exist —
+  **Administrator** (`admin`) and **Campaign Creator** (`creator`). The role is
+  kept in context (and `sessionStorage`); `isAdmin` drives the GR-006 gating of
+  the approval queue. This is a POC, so there is no backend auth or password
+  store — see [auth.js](../src/services/auth.js).
 - **Create/edit wizard (4 steps):** `Setup → Segment → Location → Review`.
   Setup captures name/description/keywords/product/priority/dates and
   multi-select **channels**; Segment picks user segments (modal) + optional list
@@ -336,6 +357,12 @@ each cited as `GR-###` in code:
   Setup step is valid (name, dates with end ≥ start, ≥1 channel).
 - **GR-005 (UI):** an in-flight-action `busy` guard disables
   Approve/Reject/Clone and the confirm dialog to prevent double-submits.
+- **GR-006 (UI):** role-based authorization — only **Administrators** see the
+  *Awaiting your approval* queue and its Approve/Reject actions; **Campaign
+  Creators** cannot approve/reject. Enforced via
+  [auth.js](../src/services/auth.js) (`isAdmin`) in
+  [CampaignList.js](../src/components/Campaigns/CampaignList.js). GR-003 remains
+  the server-side backstop.
 
 ### The data contract (keeps both layers aligned)
 
@@ -373,7 +400,7 @@ When it prints **`Compiled successfully!`**, open **http://localhost:3000**.
 ### Run the tests
 
 ```powershell
-# Frontend (Jest + React Testing Library) — 16 tests across 5 suites
+# Frontend (Jest + React Testing Library) — 21 tests across 6 suites
 npm run test:ci
 
 # Backend (xUnit) — 27 tests

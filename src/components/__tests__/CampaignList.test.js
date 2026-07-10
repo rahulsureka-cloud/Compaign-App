@@ -4,8 +4,19 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import CampaignList from '../Campaigns/CampaignList';
 import { campaignApi } from '../../services/api';
+import { AuthProvider } from '../../services/auth';
 
 jest.mock('../../services/api');
+
+const ADMIN = { username: 'admin', name: 'Administrator', role: 'admin' };
+const CREATOR = { username: 'creator', name: 'Campaign Creator', role: 'creator' };
+
+const renderList = (user = ADMIN) =>
+  render(
+    <AuthProvider initialUser={user}>
+      <MemoryRouter><CampaignList /></MemoryRouter>
+    </AuthProvider>
+  );
 
 const campaigns = [
   { id: 'a', name: 'Alpha', channels: ['Email'], status: 'Active', startDate: '2026-06-01', endDate: '2026-08-31' },
@@ -21,15 +32,25 @@ beforeEach(() => {
 });
 
 test('shows campaigns awaiting approval with Approve/Reject', async () => {
-  render(<MemoryRouter><CampaignList /></MemoryRouter>);
+  renderList();
   expect(await screen.findByText('Awaiting your approval')).toBeInTheDocument();
   expect(screen.getByText('PendingOne')).toBeInTheDocument();
   expect(screen.getByText('Approve')).toBeInTheDocument();
   expect(screen.getByText('Reject')).toBeInTheDocument();
 });
 
+test('hides the approval queue and actions from a Campaign Creator (GR-006)', async () => {
+  renderList(CREATOR);
+  // The campaigns table still loads (creators see all screens)...
+  expect(await screen.findByText('Alpha')).toBeInTheDocument();
+  // ...but the approver-only queue and its actions are not rendered.
+  expect(screen.queryByText('Awaiting your approval')).not.toBeInTheDocument();
+  expect(screen.queryByText('Approve')).not.toBeInTheDocument();
+  expect(screen.queryByText('Reject')).not.toBeInTheDocument();
+});
+
 test('approves a pending campaign after confirming in the dialog', async () => {
-  render(<MemoryRouter><CampaignList /></MemoryRouter>);
+  renderList();
   await screen.findByText('PendingOne');
 
   await userEvent.click(screen.getByText('Approve'));
@@ -42,7 +63,7 @@ test('approves a pending campaign after confirming in the dialog', async () => {
 });
 
 test('cancelling the confirmation does not approve', async () => {
-  render(<MemoryRouter><CampaignList /></MemoryRouter>);
+  renderList();
   await screen.findByText('PendingOne');
 
   await userEvent.click(screen.getByText('Approve'));
@@ -53,7 +74,7 @@ test('cancelling the confirmation does not approve', async () => {
 });
 
 test('default Active tab shows only active campaigns; switching tab filters', async () => {
-  render(<MemoryRouter><CampaignList /></MemoryRouter>);
+  renderList();
   await screen.findByText('Awaiting your approval');
 
   // Active tab is default → Alpha visible in the campaigns table, Beta (Draft) not.
@@ -66,7 +87,7 @@ test('default Active tab shows only active campaigns; switching tab filters', as
 });
 
 test('clones a campaign', async () => {
-  render(<MemoryRouter><CampaignList /></MemoryRouter>);
+  renderList();
   await screen.findByText('Alpha');
   await userEvent.click(screen.getByRole('button', { name: 'Clone' }));
   await waitFor(() => expect(campaignApi.clone).toHaveBeenCalledWith('a'));

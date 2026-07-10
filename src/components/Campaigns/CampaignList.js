@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { campaignApi } from '../../services/api';
+import { useAuth } from '../../services/auth';
 import { CAMPAIGN_STATUSES } from './campaignOptions';
 import ConfirmDialog from '../common/ConfirmDialog';
 import '../../styles/campaigns.css';
@@ -14,6 +15,7 @@ export default function CampaignList() {
   const [activeTab, setActiveTab] = useState('Active');
   const [confirm, setConfirm] = useState(null); // { action: 'approve'|'reject', campaign }
   const [busy, setBusy] = useState(false);       // GR-005: in-flight action guard
+  const { isAdmin } = useAuth();                  // GR-006: only admins may approve/reject
   const navigate = useNavigate();
 
   const load = () => {
@@ -56,7 +58,9 @@ export default function CampaignList() {
     <div className="campaigns-page">
       {error && <div className="error-banner">{error}</div>}
 
-      {/* Awaiting your approval */}
+      {/* Awaiting your approval — approver-only queue (GR-006).
+          Campaign Creators cannot approve/reject, so the queue is hidden for them. */}
+      {isAdmin && (
       <div className="panel">
         <h2>Awaiting your approval</h2>
         <table className="data-table">
@@ -96,6 +100,7 @@ export default function CampaignList() {
           </tbody>
         </table>
       </div>
+      )}
 
       {/* Campaigns with status tabs */}
       <div className="panel">
