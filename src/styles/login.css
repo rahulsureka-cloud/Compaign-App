@@ -1,0 +1,76 @@
+/* Login page — split layout: brand summary (left) + sign-in (right).
+   Reuses the app color tokens from global.css so it matches the rest of the UI. */
+
+.login-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+}
+
+/* ---------- Left: brand / summary ---------- */
+.login-brand {
+  background: linear-gradient(160deg, var(--topbar) 0%, #00284d 100%);
+  color: #fff;
+  padding: 56px 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.brand-logo { font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+.brand-dot { color: #7bd389; }
+.brand-headline { font-size: 30px; font-weight: 800; line-height: 1.25; margin: 28px 0 14px; color: #fff; }
+.brand-sub { color: #c7d6e6; font-size: 15px; line-height: 1.6; max-width: 460px; }
+.brand-list { list-style: none; padding: 0; margin: 34px 0 0; display: flex; flex-direction: column; gap: 16px; }
+.brand-list li { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; }
+.brand-tick {
+  flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(123, 211, 137, 0.2); color: #7bd389;
+  display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;
+}
+.brand-list strong { display: block; }
+.brand-list span { color: #c7d6e6; font-size: 12.5px; }
+
+/* ---------- Right: sign-in card ---------- */
+.login-form-side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+.login-card { width: 100%; max-width: 380px; }
+.login-card h1 { font-size: 26px; margin: 0 0 6px; }
+.login-subtitle { color: var(--text-muted); margin: 0 0 24px; }
+
+/* Password field with Show/Hide toggle (field/input styles come from global.css) */
+.password-wrap { position: relative; }
+.password-wrap input { padding-right: 58px; }
+.show-toggle {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: var(--text-muted);
+  font-size: 13px; cursor: pointer; font-weight: 600;
+}
+.show-toggle:hover { color: var(--primary); }
+
+.btn-signin { width: 100%; margin-top: 4px; padding: 13px; font-size: 15px; }
+
+.demo-divider {
+  text-align: center; color: var(--text-muted); font-size: 12px; margin: 26px 0 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.demo-divider::before, .demo-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.demo-account {
+  width: 100%; text-align: left; background: #fff; border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+}
+.demo-account:hover { border-color: var(--primary); background: var(--primary-light); }
+.demo-account .role-name { font-weight: 700; }
+.demo-account .role-desc { color: var(--text-muted); font-size: 12px; margin-top: 2px; }
+.demo-account .role-user { color: var(--text-muted); font-size: 12px; font-family: monospace; white-space: nowrap; }
+
+/* Stack the panels on small screens; the brand panel drops away. */
+@media (max-width: 860px) {
+  .login-shell { grid-template-columns: 1fr; }
+  .login-brand { display: none; }
+}

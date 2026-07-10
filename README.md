@@ -4,6 +4,11 @@ Admin-tool feature (for users with the **Marketing** entitlement) to create
 campaigns via a guided wizard, review/edit/clone them, run an approval workflow,
 view a Campaign & Promotion dashboard, and manage user segments.
 
+The app opens on a **login page** and supports **two roles**: **Administrator**
+(`admin` / `admin123`) with full access including approve/reject, and
+**Campaign Creator** (`creator` / `creator123`) who can use every screen and
+create/edit/clone campaigns but cannot approve/reject.
+
 - **Frontend:** React.js (`src/components/`) — runs at **http://localhost:3000**
 - **Backend:** .NET Core Web API (`src/api/`) — runs at **http://localhost:5000**
 - **Dummy data:** `src/data/*.json`
@@ -47,6 +52,10 @@ dotnet test src/api.Tests/MarketingApi.Tests.csproj
 
 ## Features
 
+- **Login & roles** — the app is gated behind a login page (left summary panel +
+  right sign-in card with click-to-fill demo accounts). **Administrator** has
+  full access (incl. approve/reject); **Campaign Creator** sees all screens and
+  can create/edit/clone but not approve/reject (the approval queue is hidden).
 - **Dashboard** — Total Targeted Population and per-decision breakdown
   (Accepted/Fulfilled, Declined, Clicked but Unfinished) with a per-campaign
   performance table. Every campaign carries non-zero dummy metrics.
@@ -69,6 +78,7 @@ dotnet test src/api.Tests/MarketingApi.Tests.csproj
 ## Guardrails
 
 Validation and safe-action controls (date sanity, numeric ranges, the approval
-state machine, wizard field-validity gating, and double-submit prevention) are
-catalogued in **[Guardrails/Guardrails.md](Guardrails/Guardrails.md)** — the
-living register for the project.
+state machine, wizard field-validity gating, double-submit prevention, and
+role-based approval authorization) are catalogued in
+**[Guardrails/Guardrails.md](Guardrails/Guardrails.md)** — the living register
+for the project.

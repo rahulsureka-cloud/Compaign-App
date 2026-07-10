@@ -16,7 +16,9 @@ spreadsheets, separate reporting tools, or help from a technical team to get
 their day-to-day work done.
 
 Access is meant for staff who have the **"Marketing"** permission in the admin
-system — so only the right people can create, approve, and change campaigns.
+system — so only the right people can create, approve, and change campaigns. You
+sign in on a **login page** first, and what you can do depends on your **role**
+(see below).
 
 In short: **it helps the marketing team run promotions and see whether those
 promotions are working.**
@@ -26,6 +28,12 @@ promotions are working.**
 ## 2. What the application does
 
 The tool covers these everyday marketing jobs:
+
+0. **Sign in with your role.**
+   You start on a login page. There are two kinds of users: an **Administrator**
+   (full access — can also approve or reject campaigns) and a **Campaign
+   Creator** (can use every screen and create campaigns, but cannot approve or
+   reject them).
 
 1. **Manage campaigns (the promotions themselves).**
    Create a new promotion with a guided step-by-step wizard, view all promotions
@@ -56,9 +64,22 @@ Who should receive it? Is it approved? Is it working?*
 Below is everything the application lets you do, described the way you would
 actually use it on screen. No technical steps — just clicks.
 
+### Signing in
+
+- When you open the app you first see a **login page**. The **left side**
+  summarises what the tool does; the **right side** is the sign-in card.
+- Enter your **username** and **password** (a **Show** link reveals the
+  password). For convenience there are **demo accounts** listed below the form —
+  click one to fill the details automatically, then click **Sign in**:
+  - **Administrator** (`admin`) — full access, including approve/reject.
+  - **Campaign Creator** (`creator`) — all screens and create campaigns, but
+    **no** approve/reject.
+- After signing in you enter the app. Your name and role show at the top right,
+  with a **Sign out** button.
+
 ### Getting around
 
-- When you open the app you land on the **Dashboard**.
+- Once signed in you land on the **Dashboard**.
 - On the **left side** is the **Marketing** menu, in this order:
   **Dashboard**, **Create campaign**, **Campaigns**, and **User segment**.
 - Click any menu item to go to that screen. The bar at the top always reminds
@@ -85,7 +106,8 @@ actually use it on screen. No technical steps — just clicks.
 Click **Campaigns** in the left menu. This screen has two parts:
 
 **"Awaiting your approval"** (top): a list of campaigns that have been sent for
-approval, each with **Approve** and **Reject** buttons (see section E).
+approval, each with **Approve** and **Reject** buttons (see section E). *This
+queue is only shown to **Administrators**; Campaign Creators don't see it.*
 
 **"Campaigns"** (below): the full list, organised by **status tabs**:
 - **In-progress** — being worked on / journey being defined.
@@ -141,7 +163,7 @@ twice.
 2. The wizard opens, pre-filled with the current details.
 3. Change whatever you need across the steps and save from the Review step.
 
-### E. Approve or reject a campaign
+### E. Approve or reject a campaign *(Administrators only)*
 
 1. On the **Campaigns** screen, look at **"Awaiting your approval"**.
 2. Click **Approve** or **Reject** on a campaign.
@@ -193,10 +215,11 @@ similar campaign.
 
 ---
 
-### Quick reference — the four screens
+### Quick reference — the screens
 
 | Screen | What you do there |
 | --- | --- |
+| **Login** | Sign in as Administrator or Campaign Creator (your role sets what you can do). |
 | **Dashboard** | Check how campaigns are performing (targeted, accepted, declined, unfinished). |
 | **Create campaign** | Add a new promotion via the 4-step wizard (Setup → Segment → Location → Review). |
 | **Campaigns** | Approve/reject campaigns awaiting approval; browse campaigns by status; edit or clone them. |

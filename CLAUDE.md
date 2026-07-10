@@ -11,7 +11,20 @@
 ## 1. Project overview
 
 **Marketing Campaign Management Tool** is an Admin-tool feature for users who
-hold the **"Marketing"** entitlement. It lets them:
+hold the **"Marketing"** entitlement.
+
+**Login & roles.** The app opens on a **login page** (split layout: a left
+summary panel describing the app + a right "Welcome back" sign-in card with
+click-to-fill demo accounts). Until a user signs in, the whole app is gated.
+There are exactly **two roles** (frontend-only demo users — this is a POC; see
+`src/services/auth.js`):
+
+- **Administrator** (`admin` / `admin123`) — full access; **can approve/reject**.
+- **Campaign Creator** (`creator` / `creator123`) — sees all screens and can
+  create/edit/clone campaigns, but **cannot approve/reject** (the *Awaiting your
+  approval* queue is hidden). Enforced by **GR-006**.
+
+Once signed in, the tool lets the user:
 
 - **Create campaigns via a 4-step wizard** (Setup → Segment → Location →
   Review), and read/update/clone them. (Delete exists on the API; the UI uses
@@ -70,17 +83,18 @@ Compaign App/
 ├── public/
 │   └── index.html
 └── src/
-    ├── index.js                  # React entry point
-    ├── App.js                    # Layout + routing
+    ├── index.js                  # React entry point (wraps App in AuthProvider)
+    ├── App.js                    # Login gate + layout + routing
     ├── setupProxy.js             # Proxies /api -> backend :5000
     ├── components/               # React UI components
+    │   ├── Login/                # Login page (split brand + sign-in)
     │   ├── Dashboard/
     │   ├── Campaigns/            # CampaignList, CampaignWizard, wizard/ steps
     │   ├── UserSegment/
     │   ├── Layout/
     │   ├── common/              # ConfirmDialog, etc.
     │   └── __tests__/            # Jest test files
-    ├── services/                 # API client helpers (fetch wrappers)
+    ├── services/                 # API client helpers (api.js) + auth.js (roles)
     ├── data/                     # Dummy/seed data (JSON)
     ├── styles/                   # All .css files
     ├── api/                      # .NET Core Web API

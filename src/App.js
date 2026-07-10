@@ -7,9 +7,18 @@ import CampaignList from './components/Campaigns/CampaignList';
 import CampaignWizard from './components/Campaigns/CampaignWizard';
 import UserSegmentList from './components/UserSegment/UserSegmentList';
 import AddUserSegment from './components/UserSegment/AddUserSegment';
+import Login from './components/Login/Login';
+import { useAuth } from './services/auth';
 import './styles/layout.css';
 
 export default function App() {
+  const { isAuthenticated } = useAuth();
+
+  // Until the user signs in, the whole app is gated behind the login page.
+  if (!isAuthenticated) {
+    return <Login />;
+  }
+
   return (
     <div className="app-shell">
       <Sidebar />
