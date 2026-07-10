@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { describeRules } from '../../UserSegment/segmentOptions';
 import '../../../styles/wizard.css';
 
 /**
@@ -16,7 +17,6 @@ export default function SegmentPickerModal({ segments, initialSelected, onAdd, o
       return next;
     });
 
-  const criteria = (s) => s.rules.map((r) => `${r.criteria} ${r.operator} ${r.value}`).join(` ${s.matchLogic} `);
   const visible = segments.filter((s) => s.name.toLowerCase().includes(search.toLowerCase()));
   const selectedSegments = segments.filter((s) => selected.has(s.id));
 
@@ -64,7 +64,7 @@ export default function SegmentPickerModal({ segments, initialSelected, onAdd, o
               <tr key={s.id}>
                 <td className="cell-title link-text">{s.name}</td>
                 <td className="num">{s.estimatedReach.toLocaleString()}</td>
-                <td className="rules-cell">{criteria(s)}</td>
+                <td className="rules-cell">{describeRules(s)}</td>
                 <td>
                   <input
                     type="checkbox"

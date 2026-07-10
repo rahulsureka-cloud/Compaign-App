@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import SegmentPickerModal from './SegmentPickerModal';
-import { countUsersInFile } from './parseUpload';
+import FileUpload from '../../common/FileUpload';
+import { combineAudienceReach } from '../../UserSegment/segmentOptions';
 import '../../../styles/wizard.css';
 
 export default function StepSegment({ form, patch, segments }) {
@@ -9,15 +10,20 @@ export default function StepSegment({ form, patch, segments }) {
   const selectedSegments = segments.filter((s) => form.segmentIds.includes(s.id));
   const existingUsers = selectedSegments.reduce((sum, s) => sum + (s.estimatedReach || 0), 0);
   const manualUsers = form.manualUploadUsers || 0;
-  // Rough de-dup estimate for the POC.
-  const estimatedReach = Math.round((existingUsers + manualUsers) * 0.9);
+  // Rough de-dup estimate for the POC (shared with the segment builder).
+  const estimatedReach = combineAudienceReach({
+    segmentReaches: selectedSegments.map((s) => s.estimatedReach),
+    manualUsers,
+  });
 
   // Recompute estimatedReach on the form whenever the selection or upload changes.
   const recalc = (ids, mUsers) => {
-    const eUsers = segments
-      .filter((s) => ids.includes(s.id))
-      .reduce((sum, s) => sum + (s.estimatedReach || 0), 0);
-    patch({ estimatedReach: Math.round((eUsers + mUsers) * 0.9) });
+    patch({
+      estimatedReach: combineAudienceReach({
+        segmentReaches: segments.filter((s) => ids.includes(s.id)).map((s) => s.estimatedReach),
+        manualUsers: mUsers,
+      }),
+    });
   };
 
   const applySelection = (ids) => {
@@ -30,17 +36,6 @@ export default function StepSegment({ form, patch, segments }) {
     const ids = form.segmentIds.filter((x) => x !== id);
     patch({ segmentIds: ids });
     recalc(ids, manualUsers);
-  };
-
-  // Parse the uploaded file and reflect its real user count. A new upload
-  // overwrites any previously uploaded list.
-  const onFile = async (e) => {
-    const file = e.target.files[0];
-    e.target.value = ''; // allow re-selecting the same file name
-    if (!file) return;
-    const count = await countUsersInFile(file);
-    patch({ manualUploadName: file.name, manualUploadUsers: count });
-    recalc(form.segmentIds, count);
   };
 
   const clearUpload = () => {
@@ -79,14 +74,13 @@ export default function StepSegment({ form, patch, segments }) {
 
           <div className="upload-block">
             <div className="upload-label">Upload user list (optional)</div>
-            <p className="hint">ⓘ For manual list, please upload CSV, XLS, XLSX files. Max file size: 60MB.</p>
-            <div className="upload-row">
-              <label className="btn btn-outline file-btn">
-                Select a file
-                <input type="file" accept=".csv,.xls,.xlsx" hidden onChange={onFile} />
-              </label>
-              <div className="dropzone">{form.manualUploadName || 'Drop your file here'}</div>
-            </div>
+            <FileUpload
+              fileName={form.manualUploadName}
+              onUpload={(name, count) => {
+                patch({ manualUploadName: name, manualUploadUsers: count });
+                recalc(form.segmentIds, count);
+              }}
+            />
           </div>
         </div>
 

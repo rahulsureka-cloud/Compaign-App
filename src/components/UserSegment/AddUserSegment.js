@@ -1,17 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { segmentApi } from '../../services/api';
 import uploadedUsers from '../../data/uploadedUsers.json';
+import { CRITERIA, OPERATORS, MATCH_LOGIC, newRule, estimateSegmentReach } from './segmentOptions';
+import FileUpload from '../common/FileUpload';
 import '../../styles/segments.css';
-
-const CRITERIA = ['Age', 'State', 'Gender', 'Income', 'Account type'];
-const OPERATORS = ['is', 'is not', 'Greater than', 'Less than', 'Contains'];
-const MATCH_LOGIC = [
-  { value: 'AND', label: 'Match ALL criteria (AND)' },
-  { value: 'OR', label: 'Match ANY criteria (OR)' },
-];
-
-const newRule = () => ({ criteria: 'Age', operator: 'Greater than', value: '' });
 
 export default function AddUserSegment() {
   const navigate = useNavigate();
@@ -20,11 +13,16 @@ export default function AddUserSegment() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [baseSegmentId, setBaseSegmentId] = useState('');
+  const [baseSegments, setBaseSegments] = useState([]);
   const [matchLogic, setMatchLogic] = useState('AND');
   const [rules, setRules] = useState([newRule()]);
   const [error, setError] = useState('');
 
-  const estimatedReach = uploadedUsers.length;
+  useEffect(() => {
+    segmentApi.getAll().then((list) => setBaseSegments(list || [])).catch(() => {});
+  }, []);
+
+  const estimatedReach = estimateSegmentReach({ rules, matchLogic });
 
   const addRule = () => setRules((prev) => [...prev, newRule()]);
   const removeRule = (idx) => setRules((prev) => prev.filter((_, i) => i !== idx));
@@ -37,7 +35,7 @@ export default function AddUserSegment() {
     baseSegmentId: baseSegmentId || null,
     matchLogic,
     rules,
-    estimatedReach: 0, // server estimates
+    estimatedReach: estimateSegmentReach({ rules, matchLogic }),
   });
 
   const validate = () => {
@@ -93,26 +91,17 @@ export default function AddUserSegment() {
               New customer list
             </label>
           </div>
-          <p className="hint">ⓘ For manual list, please upload CSV, XLS, XLSX files. Max file size: 60MB.</p>
-          <div className="upload-row">
-            <label className="btn btn-outline file-btn">
-              Select a file
-              <input
-                type="file"
-                accept=".csv,.xls,.xlsx"
-                hidden
-                onChange={(e) => setFileName(e.target.files[0]?.name || '')}
-              />
-            </label>
-            <div className="dropzone">{fileName || 'Drop your file here'}</div>
-          </div>
+          <FileUpload
+            fileName={fileName}
+            onUpload={(name) => setFileName(name)}
+          />
         </div>
 
         <div className="panel audience-panel">
           <h3>Audience summary</h3>
           <div className="audience-sub">Estimated reach</div>
           <div className="audience-value">{estimatedReach.toLocaleString()}</div>
-          <div className="audience-sub">users uploaded manually</div>
+          <div className="audience-sub">based on segment rules</div>
         </div>
       </div>
 
@@ -159,8 +148,7 @@ export default function AddUserSegment() {
           />
           <select className="text-input" value={baseSegmentId} onChange={(e) => setBaseSegmentId(e.target.value)}>
             <option value="">Select existing segment (optional)</option>
-            <option value="s1a11111-1111-1111-1111-111111111111">California Adults 25+</option>
-            <option value="s2a22222-2222-2222-2222-222222222222">New Jersey Prospects</option>
+            {baseSegments.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
           </select>
         </div>
       </div>

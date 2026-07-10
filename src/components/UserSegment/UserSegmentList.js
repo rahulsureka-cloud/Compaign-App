@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { segmentApi } from '../../services/api';
+import { describeRules } from './segmentOptions';
 import '../../styles/segments.css';
 
 export default function UserSegmentList() {
@@ -29,11 +30,6 @@ export default function UserSegmentList() {
       setError(e.message);
     }
   };
-
-  const describeRules = (seg) =>
-    seg.rules
-      .map((r) => `${r.criteria} ${r.operator} ${r.value}`)
-      .join(` ${seg.matchLogic} `);
 
   if (loading) return <div className="loading">Loading segments…</div>;
 

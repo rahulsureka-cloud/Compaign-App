@@ -92,9 +92,9 @@ Compaign App/
     │   ├── Login/                # Login page (split brand + sign-in)
     │   ├── Dashboard/
     │   ├── Campaigns/            # CampaignList, CampaignWizard, wizard/ steps
-    │   ├── UserSegment/
+    │   ├── UserSegment/          # UserSegmentList, AddUserSegment, segmentOptions.js (shared option lists + describeRules)
     │   ├── Layout/
-    │   ├── common/              # ConfirmDialog, etc.
+    │   ├── common/              # ConfirmDialog, FileUpload, parseUpload (shared, reused by wizard + segments)
     │   └── __tests__/            # Jest test files
     ├── services/                 # API client helpers (api.js) + auth.js (roles)
     ├── data/                     # Dummy/seed data (JSON)
@@ -223,6 +223,14 @@ but is no longer collected in the wizard UI — the Content step was removed.)
   "estimatedReach": 17754            // Audience summary estimate
 }
 ```
+
+*Estimated reach* is a rules-based heuristic: `100000 × factor^(#rules)` with
+factor `0.45` for AND and `0.70` for OR match logic. It is computed
+authoritatively by the backend (`SegmentService.EstimateReach`) and mirrored on
+the frontend (`src/components/UserSegment/segmentOptions.js` →
+`estimateSegmentReach`) so the builder's live preview matches the stored value.
+A campaign's audience reach combines its chosen segments' reach plus any manual
+upload users via a shared `0.9` dedup factor (`combineAudienceReach`).
 
 ---
 

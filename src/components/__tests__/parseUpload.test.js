@@ -1,4 +1,4 @@
-import { countUsers } from '../Campaigns/wizard/parseUpload';
+import { countUsers } from '../common/parseUpload';
 
 // ASCII string -> byte array (TextEncoder isn't available in the CRA jsdom env).
 const toBytes = (str) => Uint8Array.from(str, (c) => c.charCodeAt(0));

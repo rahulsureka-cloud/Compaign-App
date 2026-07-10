@@ -125,16 +125,18 @@ Compaign App/
     │   │   └── wizard/
     │   │       ├── WizardProgress.js     #   Step tracker (Setup→Segment→Location→Review)
     │   │       ├── StepSetup.js          #   Step 1: details + multi-select channels
-    │   │       ├── StepSegment.js        #   Step 2: pick segments + audience summary
+    │   │       ├── StepSegment.js        #   Step 2: pick segments + audience summary (uses common/FileUpload)
     │   │       ├── StepLocation.js       #   Step 3: web/mobile placements
     │   │       ├── StepReview.js         #   Step 4: summary + edit jumps
-    │   │       ├── SegmentPickerModal.js #   "Select user segment" popup
-    │   │       └── parseUpload.js         #   Counts users in an uploaded CSV/XLS/XLSX (SheetJS)
+    │   │       └── SegmentPickerModal.js #   "Select user segment" popup (uses UserSegment/segmentOptions)
     │   ├── UserSegment/
-    │   │   ├── UserSegmentList.js #   Segment list
-    │   │   └── AddUserSegment.js  #   Build segment + upload list
+    │   │   ├── UserSegmentList.js    #   Segment list
+    │   │   ├── AddUserSegment.js     #   Build segment + upload list (uses common/FileUpload)
+    │   │   └── segmentOptions.js     #   Shared segment option lists (CRITERIA/OPERATORS/MATCH_LOGIC) + describeRules
     │   ├── common/
-    │   │   └── ConfirmDialog.js   #   Reusable yes/no confirmation modal
+    │   │   ├── ConfirmDialog.js   #   Reusable yes/no confirmation modal
+    │   │   ├── FileUpload.js      #   Reusable CSV/XLS/XLSX picker (shared by wizard Segment step + AddUserSegment)
+    │   │   └── parseUpload.js     #   Counts users in an uploaded CSV/XLS/XLSX (SheetJS); moved here from Campaigns/wizard/
     │   └── __tests__/             #   Jest component tests
     │
     ├── services/
@@ -311,8 +313,23 @@ the bundled `src/data/*.json` so read-only screens still render.)*
    - [UserSegmentList.js](../src/components/UserSegment/UserSegmentList.js) →
      `getAll()` / `remove()`.
    - [AddUserSegment.js](../src/components/UserSegment/AddUserSegment.js) →
-     builds rules + `create()`; also previews `uploadedUsers.json`.
-7. **Proxy** — in development, [setupProxy.js](../src/setupProxy.js) forwards any
+     builds rules + `create()`; also previews `uploadedUsers.json`. Its
+     base-segment dropdown loads the real segments via `segmentApi.getAll()`
+     (rather than hardcoded options).
+7. **Shared frontend modules** — the User Segment screens and the campaign
+   wizard's Segment step now share code so the audience/upload experience stays
+   consistent:
+   - [UserSegment/segmentOptions.js](../src/components/UserSegment/segmentOptions.js)
+     is the single source of truth for the segment option lists (`CRITERIA`,
+     `OPERATORS`, `MATCH_LOGIC`, `newRule`) and the `describeRules` formatter —
+     imported by `AddUserSegment`, `UserSegmentList`, and the wizard's
+     `SegmentPickerModal`.
+   - [common/FileUpload.js](../src/components/common/FileUpload.js) is a reusable
+     CSV/XLS/XLSX picker (parses the real user-row count) used by both the
+     wizard's `StepSegment` and `AddUserSegment`.
+   - [common/parseUpload.js](../src/components/common/parseUpload.js) (moved here
+     from `Campaigns/wizard/`) does the SheetJS row counting behind `FileUpload`.
+8. **Proxy** — in development, [setupProxy.js](../src/setupProxy.js) forwards any
    `/api/*` request from port 3000 to the backend on port 5000, so the two run
    independently without CORS friction in the browser.
 
@@ -339,11 +356,22 @@ the bundled `src/data/*.json` so read-only screens still render.)*
   `targetedPopulation`/`accepted`/`declined`/`clickedUnfinished` on Create and
   Clone, so every campaign always has non-zero numbers and a colored dashboard
   bar.
-- **Manual list upload (Segment step):** `Select a file` reads the chosen
-  CSV/XLS/XLSX with SheetJS ([parseUpload.js](../src/components/Campaigns/wizard/parseUpload.js)),
+- **Manual list upload (Segment step):** the reusable
+  [FileUpload](../src/components/common/FileUpload.js) picker reads the chosen
+  CSV/XLS/XLSX with SheetJS ([parseUpload.js](../src/components/common/parseUpload.js)),
   counts the data rows, and shows that as **"Manual upload users"** (feeding the
-  estimated reach). Re-uploading replaces the previous list. A ready-to-use
+  estimated reach). Re-uploading replaces the previous list. The same picker is
+  reused when building a User Segment. A ready-to-use
   sample lives in [DummyData/dummy-users.csv](../DummyData/dummy-users.csv).
+- **Reach model (shared FE/BE):** a segment's estimated reach is a rules-based
+  heuristic `100000 × factor^(#rules)` (factor `0.45` for AND, `0.70` for OR).
+  The frontend formula in
+  [UserSegment/segmentOptions.js](../src/components/UserSegment/segmentOptions.js)
+  (`estimateSegmentReach`) mirrors backend `SegmentService.EstimateReach` and is
+  kept in sync so the segment builder's live preview equals the value the server
+  stores. A campaign's audience reach combines the chosen segments' reach plus
+  any manual-upload users through a single shared `0.9` dedup factor
+  (`combineAudienceReach`, used by the wizard's Segment step).
 
 ### Guardrails
 
@@ -404,7 +432,7 @@ When it prints **`Compiled successfully!`**, open **http://localhost:3000**.
 ### Run the tests
 
 ```powershell
-# Frontend (Jest + React Testing Library) — 22 tests across 6 suites
+# Frontend (Jest + React Testing Library) — 28 tests across 7 suites
 npm run test:ci
 
 # Backend (xUnit) — 27 tests

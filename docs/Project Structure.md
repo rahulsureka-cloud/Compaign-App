@@ -143,6 +143,9 @@ Review**. Use **Next** / **Back** to move between steps.
      is provided with the project.)
    - The **Audience summary** on the right shows existing-segment users, manual
      upload users, and the estimated reach.
+   - *Good to know:* choosing an audience here works exactly like building a
+     User Segment — the same file upload and the same criteria wording are used
+     in both places, so the experience is consistent.
 3. **Location** — where it appears: tick the **Web** and **Mobile** placements
    (e.g. Accounts-top banner, Dashboard banner).
 4. **Review** — a summary of everything, grouped into Campaign details, Segment,
@@ -196,11 +199,18 @@ similar campaign.
    - **New customer list** — upload your own file (CSV, XLS, or XLSX, up to 60 MB)
      by clicking **Select a file** or dropping it into the box.
 3. The **Audience summary** on the right shows the estimated reach — how many
-   people your selection covers.
+   people your selection covers. This estimate reflects the segment's rules
+   (more or tighter rules mean a smaller audience), and it matches the reach
+   you'll see for the segment afterward in the list. When you use segments in a
+   campaign, that campaign's reach combines the segments you chose plus any list
+   you uploaded.
 4. **Review uploaded list** shows a preview table of the customers (name, age,
    state, date of birth) with a green check confirming each is valid.
 5. **Name your segment** and add an optional description. You can also base it on
-   an existing segment.
+   **any existing segment** — the dropdown lists all the segments you've already
+   saved. The upload box and the criteria wording here are the same ones you see
+   when choosing an audience while creating a campaign, so the two screens feel
+   consistent.
 6. **Add the rules** that define who belongs in this audience:
    - Each **rule** has three parts: a **criteria** (e.g. Age, State), an
      **operator** (e.g. *is*, *greater than*), and a **value** (e.g. 25 or CA).

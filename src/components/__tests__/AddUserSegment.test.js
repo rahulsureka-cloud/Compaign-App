@@ -7,6 +7,13 @@ import { segmentApi } from '../../services/api';
 
 jest.mock('../../services/api');
 
+beforeEach(() => {
+  segmentApi.getAll.mockResolvedValue([
+    { id: 's1', name: 'California Adults 25+', matchLogic: 'AND', rules: [], estimatedReach: 17754 },
+    { id: 's2', name: 'New Jersey Prospects', matchLogic: 'OR', rules: [], estimatedReach: 8420 },
+  ]);
+});
+
 test('adds and removes segment criteria rules', async () => {
   render(<MemoryRouter><AddUserSegment /></MemoryRouter>);
 
