@@ -8,6 +8,7 @@ import CampaignList from './components/Campaigns/CampaignList';
 import CampaignWizard from './components/Campaigns/CampaignWizard';
 import TemplateList from './components/Templates/TemplateList';
 import Approvals from './components/Approvals/Approvals';
+import AuditTrail from './components/AuditTrail/AuditTrail';
 import UserSegmentList from './components/UserSegment/UserSegmentList';
 import AddUserSegment from './components/UserSegment/AddUserSegment';
 import Login from './components/Login/Login';
@@ -38,6 +39,7 @@ export default function App() {
             <Route path="/campaigns/:id/edit" element={<CampaignWizard />} />
             <Route path="/templates" element={<TemplateList />} />
             <Route path="/approvals" element={<Approvals />} />
+            <Route path="/audit-trail" element={<AuditTrail />} />
             <Route path="/user-segment" element={<UserSegmentList />} />
             <Route path="/user-segment/new" element={<AddUserSegment />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />

@@ -19,6 +19,7 @@ const NAV = [
     adminOnly: true,
     items: [
       { to: '/approvals', label: 'Approvals' },
+      { to: '/audit-trail', label: 'Audit Trail' },
     ],
   },
 ];

@@ -194,7 +194,7 @@ so the UI still renders — handy for demos."
   **mirrors** the backend formula, so previews equal stored values.
 - **Guardrails** cited as `GR-###` in code, with a living register.
 - **Tests:** `npm run test:ci` (Jest + React Testing Library) and `dotnet test`
-  (xUnit) — currently **32 frontend + 27 backend** passing.
+  (xUnit) — currently **39 frontend + 27 backend** passing.
 - **State is in-memory** — created/edited data resets on backend restart (POC
   choice; swap the service for a DB later).
 
@@ -227,7 +227,7 @@ so the UI still renders — handy for demos."
 | "Can a Creator approve by any trick?" | UI hides it (GR-006) and GR-003 guards the transition server-side. |
 | "How is reach calculated?" | Rules-based heuristic (`100000 × factor^rules`, AND 0.45 / OR 0.70), same on FE and BE. |
 | "How do we add a field/metric?" | Update the data contract (CLAUDE.md §6), then model → seed → API → UI → tests. |
-| "Is it tested?" | Yes — 32 frontend + 27 backend automated tests; both run in CI. |
+| "Is it tested?" | Yes — 39 frontend + 27 backend automated tests; both run in CI. |
 | "Production-ready?" | It's a functional POC; next steps are a real database, real auth, and hardening. |
 
 ---
@@ -255,6 +255,7 @@ so the UI still renders — handy for demos."
 | **Campaigns** | Status tabs + edit/clone/create |
 | **User segment** | Build/manage reusable audiences from rules |
 | **Approvals** *(admin-only)* | Approval queue — approve/reject (moved out of Campaigns) |
+| **Audit Trail** *(admin-only)* | Activity log — who signed in and what actions they performed, with timestamps |
 
 **Golden demo path (if you only have 10 minutes):**
 Login (admin) → Dashboard → Create campaign (wizard) → Send for approval →

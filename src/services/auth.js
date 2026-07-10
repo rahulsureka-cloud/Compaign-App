@@ -11,6 +11,7 @@
 // so a page refresh keeps the session (cleared when the tab closes).
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
+import { logAudit } from './audit';
 
 export const ROLES = {
   ADMIN: 'admin',
@@ -71,10 +72,12 @@ export function AuthProvider({ children, initialUser }) {
     } catch {
       /* storage unavailable — session stays in memory only */
     }
+    logAudit('Login', 'Signed in', safeUser);
     return { ok: true };
   }, []);
 
   const logout = useCallback(() => {
+    logAudit('Logout', 'Signed out'); // read the current user before clearing it
     setUser(null);
     try {
       sessionStorage.removeItem(STORAGE_KEY);

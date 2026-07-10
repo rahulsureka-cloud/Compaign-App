@@ -33,7 +33,7 @@
 | GR-003 | Approval state machine (only *Under approval* → approve/reject) | Service + API | Campaigns → *Awaiting your approval* → `POST /api/campaigns/{id}/approve`·`/reject` | ✅ |
 | GR-004 | Disable Next / Send-for-approval until Setup is valid | UI | Create campaign wizard (Setup & Review steps) | ✅ |
 | GR-005 | Prevent double-submit (disable actions while in flight) | UI | Campaigns (Approve/Reject/Clone + confirm) & wizard submit | ✅ |
-| GR-006 | Role-based approval authorization (only Administrators may approve/reject) | UI | Login + **Approvals** screen (`/approvals`) → *Awaiting your approval* queue | ✅ |
+| GR-006 | Role-based authorization (only Administrators may approve/reject or view the audit trail) | UI | Login + admin-only **Administration** group: **Approvals** (`/approvals`) & **Audit Trail** (`/audit-trail`) | ✅ |
 
 ---
 
@@ -172,18 +172,23 @@
 - **Behaviour:** a Campaign Creator never sees the Approvals menu entry, and even
   a direct visit to `/approvals` is bounced to `/dashboard`, so the approval
   action cannot be triggered from the UI. GR-003 remains the server-side backstop
-  for the transition itself.
+  for the transition itself. The **Audit Trail** page (`/audit-trail`) is gated
+  the same way — the whole **Administration** nav group and both pages are
+  admin-only and self-guard.
 - **Implementation:** [auth.js](../src/services/auth.js),
   [Login.js](../src/components/Login/Login.js),
   [BrandBar.js](../src/components/Layout/BrandBar.js) (shows the logged-in role + Sign out),
-  [App.js](../src/App.js) (login gate + `/approvals` route),
+  [App.js](../src/App.js) (login gate + `/approvals` and `/audit-trail` routes),
   [Sidebar.js](../src/components/Layout/Sidebar.js) (admin-only Administration group),
-  [Approvals.js](../src/components/Approvals/Approvals.js) (self-guard + queue).
+  [Approvals.js](../src/components/Approvals/Approvals.js) (self-guard + queue),
+  [AuditTrail.js](../src/components/AuditTrail/AuditTrail.js) (self-guard + activity log).
 - **Tests:** [Login.test.js](../src/components/__tests__/Login.test.js) (renders
-  the two roles, invalid-credential handling, demo-fill sign-in, Show/Hide) and
+  the two roles, invalid-credential handling, demo-fill sign-in, Show/Hide),
   [Approvals.test.js](../src/components/__tests__/Approvals.test.js) —
   *"admin sees the approval queue and can approve after confirming"* and
-  *"a Campaign Creator is redirected away — no approval queue (GR-006)"*.
+  *"a Campaign Creator is redirected away — no approval queue (GR-006)"* — and
+  [AuditTrail.test.js](../src/components/__tests__/AuditTrail.test.js) —
+  *"a Campaign Creator is redirected away (GR-006)"*.
 - **Related:** GR-003 (approval state machine — server-side backstop).
 
 ---
@@ -213,3 +218,4 @@ Also: add a row to the **Register** table and a line to the **Change log**.
 | 2026-07-09 | GR-001 … GR-005 | Initial guardrails: date sanity, numeric ranges, approval state machine, wizard field-validity gating, double-submit prevention. |
 | 2026-07-10 | GR-006 | Added login page with two roles (Administrator, Campaign Creator); only Administrators see the approval queue / can approve/reject. |
 | 2026-07-10 | GR-006 | Approval queue moved out of the Campaigns list to a dedicated admin-only **Approvals** screen (`/approvals`), which self-guards by redirecting non-admins to `/dashboard`. Guardrail id/intent unchanged. |
+| 2026-07-10 | GR-006 | Extended to the new admin-only **Audit Trail** screen (`/audit-trail`); the whole Administration nav group and both pages are admin-only and self-guard. |

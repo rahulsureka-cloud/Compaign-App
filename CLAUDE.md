@@ -45,6 +45,11 @@ Once signed in, the tool lets the user:
   approval" queue **moved out of the Campaigns list** and now sits here; the
   Campaigns screen keeps only the status-tab table plus Edit/Clone/Create.
   Approvals self-guards: non-admins are redirected to `/dashboard`.
+- Review an **Audit Trail** (Administrators only, route `/audit-trail`): a log of
+  who signed in and what actions were performed (logins, approvals,
+  campaign/segment changes) with timestamps. Backed by a lightweight client-side
+  audit service (`src/services/audit.js`, persisted to `localStorage`) that
+  `auth.js` and `api.js` write to; the screen self-guards for admins.
 - View a **Campaign & Promotion Dashboard** showing how campaigns are
   performing as of today, including:
   - **Total Targeted Population**
@@ -108,11 +113,12 @@ Compaign App/
     │   ├── Campaigns/            # CampaignList, CampaignWizard, wizard/ steps
     │   ├── Templates/           # TemplateList.js (blueprints), templateData.js
     │   ├── Approvals/           # Approvals.js (admin-only approval queue; self-guards)
+    │   ├── AuditTrail/          # AuditTrail.js (admin-only activity log; self-guards)
     │   ├── UserSegment/          # UserSegmentList, AddUserSegment, SegmentDefinitionForm.js (shared controlled form), CreateSegmentModal.js (in-wizard create), segmentOptions.js (shared option lists + describeRules)
     │   ├── Layout/               # Sidebar (Marketing + Administration groups), Topbar, BrandBar (fiserv Admin Tool header)
     │   ├── common/              # ConfirmDialog, FileUpload, parseUpload (shared, reused by wizard + segments)
     │   └── __tests__/            # Jest test files
-    ├── services/                 # API client helpers (api.js) + auth.js (roles)
+    ├── services/                 # api.js (client) + auth.js (roles) + audit.js (activity log)
     ├── data/                     # Dummy/seed data (JSON)
     ├── styles/                   # All .css files
     ├── api/                      # .NET Core Web API

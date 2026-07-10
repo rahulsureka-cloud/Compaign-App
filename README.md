@@ -74,6 +74,9 @@ dotnet test src/api.Tests/MarketingApi.Tests.csproj
 - **Approvals** *(Administrators only)* — the dedicated **"Awaiting your
   approval"** queue with **Approve/Reject** (confirmation dialog). Moved here out
   of the Campaigns screen.
+- **Audit Trail** *(Administrators only)* — a log of **who signed in and what
+  actions were performed** (logins, approvals, campaign/segment changes) with
+  timestamps; backed by a client-side audit service persisted to `localStorage`.
 - **User segment** — import a custom user list, review uploaded users, build a
   segment from criteria rules (e.g. `Age > 25 AND State is CA`) with AND/OR
   match logic and an estimated audience reach.

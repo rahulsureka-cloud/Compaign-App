@@ -8,6 +8,7 @@ const titles = {
   '/campaigns/new': 'Create campaign',
   '/templates': 'Templates',
   '/approvals': 'Approvals',
+  '/audit-trail': 'Audit Trail',
   '/user-segment': 'User segment',
   '/user-segment/new': 'Add user segment',
 };

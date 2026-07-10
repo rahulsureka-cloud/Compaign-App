@@ -135,6 +135,8 @@ Compaign App/
     │   │   └── templateData.js       #   Blueprint definitions
     │   ├── Approvals/
     │   │   └── Approvals.js          #   Admin-only approval queue (moved out of CampaignList); self-guards → redirects non-admins to /dashboard
+    │   ├── AuditTrail/
+    │   │   └── AuditTrail.js         #   Admin-only activity log (who/action/when); self-guards; reads services/audit.js
     │   ├── UserSegment/
     │   │   ├── UserSegmentList.js    #   Segment list
     │   │   ├── AddUserSegment.js     #   Build segment + upload list (reuses SegmentDefinitionForm + common/FileUpload)
@@ -148,8 +150,9 @@ Compaign App/
     │   └── __tests__/             #   Jest component tests
     │
     ├── services/
-    │   ├── api.js                # Single API client (fetch + fallback to dummy data)
-    │   └── auth.js               # AuthProvider/useAuth: two roles, session state (GR-006)
+    │   ├── api.js                # Single API client (fetch + fallback to dummy data); logs mutations to audit
+    │   ├── auth.js               # AuthProvider/useAuth: two roles, session state (GR-006); logs login/logout
+    │   └── audit.js              # Client-side activity log (localStorage); powers the Audit Trail screen
     │
     ├── data/                     # ── DUMMY DATA (JSON) ──
     │   ├── campaigns.json
@@ -161,6 +164,7 @@ Compaign App/
     │   ├── login.css             #   Login page split layout (brand panel + sign-in card)
     │   ├── layout.css            #   Shell, fiserv brand bar, sidebar, topbar
     │   ├── dashboard.css
+    │   ├── audit.css             #   Audit Trail table tweaks
     │   ├── campaigns.css         #   List, status tabs, approve/reject/clone actions
     │   ├── templates.css         #   Templates screen (blueprint cards)
     │   ├── wizard.css            #   Wizard steps, channel cards, segment modal
@@ -479,7 +483,7 @@ When it prints **`Compiled successfully!`**, open **http://localhost:3000**.
 ### Run the tests
 
 ```powershell
-# Frontend (Jest + React Testing Library) — 32 tests across 10 suites
+# Frontend (Jest + React Testing Library) — 39 tests across 12 suites
 npm run test:ci
 
 # Backend (xUnit) — 27 tests

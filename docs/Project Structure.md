@@ -86,7 +86,8 @@ actually use it on screen. No technical steps — just clicks.
 - On the **left side** the menu is split into two groups:
   - **Marketing** (everyone sees this): **Dashboard**, **Create campaign**,
     **Templates**, **Campaigns**, and **User segment**.
-  - **Administration** (only **Administrators** see this): **Approvals**.
+  - **Administration** (only **Administrators** see this): **Approvals** and
+    **Audit Trail**.
 - Click any menu item to go to that screen. The bar at the top always reminds
   you where you are (for example, *Marketing › Campaigns*).
 - **Templates** lets you start a campaign from a ready-made **blueprint** that
@@ -94,6 +95,9 @@ actually use it on screen. No technical steps — just clicks.
 - **Approvals** is the dedicated screen where Administrators approve or reject
   campaigns that are waiting — this used to sit on the Campaigns screen and has
   now moved to its own menu item.
+- **Audit Trail** is an Administrators-only log showing **who signed in and what
+  they did** (logins, approvals, campaign and segment changes) with the date and
+  time of each action — useful for oversight and accountability.
 
 ### A. View campaign performance — the Dashboard
 

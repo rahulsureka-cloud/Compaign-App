@@ -4,6 +4,7 @@
 
 import campaignsSeed from '../data/campaigns.json';
 import segmentsSeed from '../data/segments.json';
+import { logAudit } from './audit';
 
 const BASE = '/api';
 
@@ -41,22 +42,28 @@ export const campaignApi = {
     }
   },
   create(campaign) {
-    return request('/campaigns', { method: 'POST', body: JSON.stringify(campaign) });
+    return request('/campaigns', { method: 'POST', body: JSON.stringify(campaign) })
+      .then((r) => { logAudit('Create campaign', campaign?.name || ''); return r; });
   },
   update(id, campaign) {
-    return request(`/campaigns/${id}`, { method: 'PUT', body: JSON.stringify(campaign) });
+    return request(`/campaigns/${id}`, { method: 'PUT', body: JSON.stringify(campaign) })
+      .then((r) => { logAudit('Update campaign', campaign?.name || `#${id}`); return r; });
   },
   remove(id) {
-    return request(`/campaigns/${id}`, { method: 'DELETE' });
+    return request(`/campaigns/${id}`, { method: 'DELETE' })
+      .then((r) => { logAudit('Delete campaign', `#${id}`); return r; });
   },
   approve(id) {
-    return request(`/campaigns/${id}/approve`, { method: 'POST' });
+    return request(`/campaigns/${id}/approve`, { method: 'POST' })
+      .then((r) => { logAudit('Approve campaign', r?.name || `#${id}`); return r; });
   },
   reject(id) {
-    return request(`/campaigns/${id}/reject`, { method: 'POST' });
+    return request(`/campaigns/${id}/reject`, { method: 'POST' })
+      .then((r) => { logAudit('Reject campaign', r?.name || `#${id}`); return r; });
   },
   clone(id) {
-    return request(`/campaigns/${id}/clone`, { method: 'POST' });
+    return request(`/campaigns/${id}/clone`, { method: 'POST' })
+      .then((r) => { logAudit('Clone campaign', r?.name || `#${id}`); return r; });
   },
 };
 
@@ -71,13 +78,16 @@ export const segmentApi = {
     }
   },
   create(segment) {
-    return request('/segments', { method: 'POST', body: JSON.stringify(segment) });
+    return request('/segments', { method: 'POST', body: JSON.stringify(segment) })
+      .then((r) => { logAudit('Create segment', segment?.name || ''); return r; });
   },
   update(id, segment) {
-    return request(`/segments/${id}`, { method: 'PUT', body: JSON.stringify(segment) });
+    return request(`/segments/${id}`, { method: 'PUT', body: JSON.stringify(segment) })
+      .then((r) => { logAudit('Update segment', segment?.name || `#${id}`); return r; });
   },
   remove(id) {
-    return request(`/segments/${id}`, { method: 'DELETE' });
+    return request(`/segments/${id}`, { method: 'DELETE' })
+      .then((r) => { logAudit('Delete segment', `#${id}`); return r; });
   },
 };
 

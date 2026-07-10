@@ -1,0 +1,4 @@
+/* Audit Trail (admin-only) */
+.audit-actions { display: flex; gap: 10px; }
+.audit-time { white-space: nowrap; color: var(--text-muted); font-size: 13px; }
+.audit-action { font-weight: 600; }
