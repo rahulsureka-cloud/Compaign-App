@@ -79,7 +79,7 @@ dotnet test src/api.Tests/MarketingApi.Tests.csproj
   timestamps; backed by a client-side audit service persisted to `localStorage`.
   **Every column is sortable**, and **Clear log is permanent** (Refresh won't
   restore cleared entries). See the sorting developer guide at the end of
-  [docs/DemoDoc.md](docs/DemoDoc.md).
+  [extras/DemoDoc.md](extras/DemoDoc.md).
 - **User segment** — import a custom user list, review uploaded users, build a
   segment from criteria rules (e.g. `Age > 25 AND State is CA`) with AND/OR
   match logic and an estimated audience reach.

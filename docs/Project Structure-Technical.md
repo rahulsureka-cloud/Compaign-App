@@ -101,6 +101,9 @@ Compaign App/
 ├── DummyData/
 │   └── dummy-users.csv           # Sample list to upload in the Segment step
 │
+├── extras/
+│   └── DemoDoc.md                # Demo script + Audit Trail sorting developer guide
+│
 ├── public/
 │   └── index.html                # HTML shell that hosts the React app
 │

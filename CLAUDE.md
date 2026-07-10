@@ -103,6 +103,8 @@ Compaign App/
 ├── DummyData/
 │   └── dummy-users.csv           # sample upload for the Segment step
 ├── IntegrateWithDevin/           # Devin integration guides
+├── extras/
+│   └── DemoDoc.md                # demo script + Audit Trail sorting dev guide
 ├── package.json                  # React app manifest (scripts, deps)
 ├── public/
 │   └── index.html
