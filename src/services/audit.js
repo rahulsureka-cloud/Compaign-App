@@ -7,6 +7,7 @@
 // audit log; a real system would record these server-side.
 
 const STORAGE_KEY = 'mcm.audit.log';
+const CLEARED_KEY = 'mcm.audit.cleared';
 const AUTH_KEY = 'mcm.auth.user';
 const MAX_ENTRIES = 500;
 
@@ -55,16 +56,32 @@ export function logAudit(action, details = '', user) {
   return entry;
 }
 
+/**
+ * Permanently clear the log. Sets a "cleared" flag so the sample seed never
+ * comes back — a later Refresh (or new session) will not re-populate it.
+ * (Genuine new actions logged via logAudit still append.)
+ */
 export function clearAuditLog() {
   save([]);
+  try {
+    localStorage.setItem(CLEARED_KEY, 'true');
+  } catch {
+    /* ignore */
+  }
 }
 
 /**
  * Seed a few sample historical entries the first time the log is viewed, so the
  * screen isn't empty before any live actions occur (useful for demos). Does
- * nothing once the log already has entries.
+ * nothing once the log already has entries, or once it has been explicitly
+ * cleared (see clearAuditLog).
  */
 export function ensureAuditSeed() {
+  try {
+    if (localStorage.getItem(CLEARED_KEY) === 'true') return;
+  } catch {
+    /* ignore */
+  }
   if (getAuditLog().length > 0) return;
   const now = Date.now();
   const at = (minsAgo) => new Date(now - minsAgo * 60000).toISOString();

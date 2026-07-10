@@ -136,7 +136,7 @@ Compaign App/
     │   ├── Approvals/
     │   │   └── Approvals.js          #   Admin-only approval queue (moved out of CampaignList); self-guards → redirects non-admins to /dashboard
     │   ├── AuditTrail/
-    │   │   └── AuditTrail.js         #   Admin-only activity log (who/action/when); self-guards; reads services/audit.js
+    │   │   └── AuditTrail.js         #   Admin-only activity log (who/action/when); sortable columns; self-guards; reads services/audit.js
     │   ├── UserSegment/
     │   │   ├── UserSegmentList.js    #   Segment list
     │   │   ├── AddUserSegment.js     #   Build segment + upload list (reuses SegmentDefinitionForm + common/FileUpload)
@@ -152,7 +152,7 @@ Compaign App/
     ├── services/
     │   ├── api.js                # Single API client (fetch + fallback to dummy data); logs mutations to audit
     │   ├── auth.js               # AuthProvider/useAuth: two roles, session state (GR-006); logs login/logout
-    │   └── audit.js              # Client-side activity log (localStorage); powers the Audit Trail screen
+    │   └── audit.js              # Client-side activity log (localStorage); powers the Audit Trail; clear is permanent (sets a flag so seed never returns)
     │
     ├── data/                     # ── DUMMY DATA (JSON) ──
     │   ├── campaigns.json
@@ -483,7 +483,7 @@ When it prints **`Compiled successfully!`**, open **http://localhost:3000**.
 ### Run the tests
 
 ```powershell
-# Frontend (Jest + React Testing Library) — 39 tests across 12 suites
+# Frontend (Jest + React Testing Library) — 42 tests across 12 suites
 npm run test:ci
 
 # Backend (xUnit) — 27 tests

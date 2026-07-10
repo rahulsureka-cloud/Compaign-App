@@ -97,7 +97,9 @@ actually use it on screen. No technical steps — just clicks.
   now moved to its own menu item.
 - **Audit Trail** is an Administrators-only log showing **who signed in and what
   they did** (logins, approvals, campaign and segment changes) with the date and
-  time of each action — useful for oversight and accountability.
+  time of each action — useful for oversight and accountability. You can **sort
+  by any column** (click its heading), and **Clear log** wipes it for good — once
+  cleared, **Refresh will not bring the old entries back**.
 
 ### A. View campaign performance — the Dashboard
 

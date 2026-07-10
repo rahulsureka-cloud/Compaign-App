@@ -286,7 +286,7 @@ Devin lands the change in one pass.
 
 ## 6. Verification & review
 
-- **Automated:** Devin runs `npm run test:ci` (39 Jest tests) and
+- **Automated:** Devin runs `npm run test:ci` (42 Jest tests) and
   `dotnet test` (27 xUnit tests) inside its VM before opening the PR.
 - **Human:** review the PR diff; optionally enable **Devin Review** to get an
   AI review comment automatically.

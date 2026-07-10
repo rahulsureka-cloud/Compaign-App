@@ -77,6 +77,9 @@ dotnet test src/api.Tests/MarketingApi.Tests.csproj
 - **Audit Trail** *(Administrators only)* — a log of **who signed in and what
   actions were performed** (logins, approvals, campaign/segment changes) with
   timestamps; backed by a client-side audit service persisted to `localStorage`.
+  **Every column is sortable**, and **Clear log is permanent** (Refresh won't
+  restore cleared entries). See the sorting developer guide at the end of
+  [docs/DemoDoc.md](docs/DemoDoc.md).
 - **User segment** — import a custom user list, review uploaded users, build a
   segment from criteria rules (e.g. `Age > 25 AND State is CA`) with AND/OR
   match logic and an estimated audience reach.

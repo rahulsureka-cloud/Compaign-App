@@ -47,9 +47,12 @@ Once signed in, the tool lets the user:
   Approvals self-guards: non-admins are redirected to `/dashboard`.
 - Review an **Audit Trail** (Administrators only, route `/audit-trail`): a log of
   who signed in and what actions were performed (logins, approvals,
-  campaign/segment changes) with timestamps. Backed by a lightweight client-side
-  audit service (`src/services/audit.js`, persisted to `localStorage`) that
-  `auth.js` and `api.js` write to; the screen self-guards for admins.
+  campaign/segment changes) with timestamps. **Every column is sortable** (click
+  a header to toggle asc/desc). Backed by a lightweight client-side audit service
+  (`src/services/audit.js`, persisted to `localStorage`) that `auth.js` and
+  `api.js` write to; the screen self-guards for admins. **Clear log is
+  permanent** — it sets a flag so Refresh (or a new session) will not re-seed the
+  sample history.
 - View a **Campaign & Promotion Dashboard** showing how campaigns are
   performing as of today, including:
   - **Total Targeted Population**

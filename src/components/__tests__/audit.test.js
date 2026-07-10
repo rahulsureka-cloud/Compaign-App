@@ -39,3 +39,13 @@ test('ensureAuditSeed seeds sample entries only when empty', () => {
   ensureAuditSeed();
   expect(getAuditLog()).toHaveLength(seeded.length);
 });
+
+test('clearAuditLog is sticky — ensureAuditSeed will not re-seed afterwards', () => {
+  ensureAuditSeed();
+  expect(getAuditLog().length).toBeGreaterThan(0);
+  clearAuditLog();
+  expect(getAuditLog()).toHaveLength(0);
+  // A subsequent refresh/seed attempt must NOT bring the sample data back.
+  ensureAuditSeed();
+  expect(getAuditLog()).toHaveLength(0);
+});
